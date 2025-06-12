@@ -1,0 +1,26 @@
+[
+	{
+		"file": "D:\\GitHub\\ActionRoguelike\\ActionRoguelike\\Source\\ActionRoguelike\\ActionRoguelike.Build.cs",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\GitHub\\ActionRoguelike\\ActionRoguelike\\.vscode\\compileCommands_ActionRoguelike\\ActionRoguelike.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\GitHub\\ActionRoguelike\\ActionRoguelike\\Source\\ActionRoguelike\\ActionRoguelike.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\GitHub\\ActionRoguelike\\ActionRoguelike\\.vscode\\compileCommands_ActionRoguelike\\ActionRoguelike.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\GitHub\\ActionRoguelike\\ActionRoguelike\\Source\\ActionRoguelike\\ActionRoguelike.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\GitHub\\ActionRoguelike\\ActionRoguelike\\.vscode\\compileCommands_ActionRoguelike\\ActionRoguelike.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	}
+]
