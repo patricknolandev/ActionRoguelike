@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "TutMagicProjectile.generated.h"
 
+class USphereComponent;
+class UProjectileMovementComponent;
+class UParticleSystemComponent;
+
 UCLASS()
 class ACTIONROGUELIKE_API ATutMagicProjectile : public AActor
 {
@@ -16,6 +20,19 @@ public:
 	ATutMagicProjectile();
 
 protected:
+
+	// Attack collision component
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* SphereComp;
+
+	// Give the attack velocity
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* MovementComp;
+
+	// Make attack visible in world
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* EffectComp;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

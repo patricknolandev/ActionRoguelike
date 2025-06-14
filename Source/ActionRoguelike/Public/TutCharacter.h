@@ -14,6 +14,11 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
+	
 public:
 	// Sets default values for this character's properties
 	ATutCharacter();
@@ -30,7 +35,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	void MoveForward(float Value);
-	void MoveRight(float X);
+	void MoveRight(float Value);
+
+	void PrimaryAttack();
+	virtual void Jump() override;
 
 public:	
 	// Called every frame

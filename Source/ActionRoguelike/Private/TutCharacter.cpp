@@ -50,6 +50,9 @@ void ATutCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ATutCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATutCharacter::Jump);
 }
 
 void ATutCharacter::MoveForward(float Value) // Player should move forward in direction of camera
@@ -75,10 +78,27 @@ void ATutCharacter::MoveRight(float Value) // Player should move left and right 
 	// Y - Right (Green)
 	// Z - Up (Blue)
 
-	// Store the Y rotation of the player controller, in FVector RightVector, using FRotationMatrix constructor,
-	// to make a temporary matrix object, then call the method GetScaledAxis to convert the
-	// rotator into a vector, getting the Y vector
+	// Store the Y rotation of the player controller
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 	// Move right & left based on controller Y rotation
 	AddMovementInput(RightVector, Value);
+}
+
+// Shoot magic projectile from hand
+void ATutCharacter::PrimaryAttack()
+{
+	// Location to spawn, relative to controller rotation
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+
+	// Always shoot even when clipping with objects on spawn
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	// Shoot projectile
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+}
+
+void ATutCharacter::Jump()
+{
+	Super::Jump();
 }
