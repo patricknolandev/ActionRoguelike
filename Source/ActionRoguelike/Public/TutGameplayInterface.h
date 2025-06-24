@@ -26,6 +26,6 @@ public:
 	// We want a way to interact with objects in the world as the player, such as a treasure chest, or health potion,
 	// and call specific logic on each object (give treasure, give health). We also want to know who triggered it, so
 	// we know who to apply the result to (passed parameters).
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Interact(APawn* InstigatorPawn);
 };

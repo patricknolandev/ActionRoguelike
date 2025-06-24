@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "TutInteractionComponent.h"
 
 // Sets default values
 ATutCharacter::ATutCharacter()
@@ -18,6 +19,8 @@ ATutCharacter::ATutCharacter()
 	// Attach a camera component to the spring arm so its controlled by it
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	InteractionComp = CreateDefaultSubobject<UTutInteractionComponent>("InteractionComp");
 
 	// Get the character to rotate towards the direction of acceleration
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -39,7 +42,7 @@ void ATutCharacter::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
+// Called to bind functionality to input - how we control the player character
 void ATutCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -53,6 +56,7 @@ void ATutCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ATutCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATutCharacter::Jump);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ATutCharacter::PrimaryInteract);
 }
 
 void ATutCharacter::MoveForward(float Value) // Player should move forward in direction of camera
@@ -87,13 +91,22 @@ void ATutCharacter::MoveRight(float Value) // Player should move left and right 
 // Shoot magic projectile from hand
 void ATutCharacter::PrimaryAttack()
 {
-	// Location to spawn, relative to controller rotation
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+
+//	GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
+}
+
+void ATutCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 
 	// Always shoot even when clipping with objects on spawn
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
 	// Shoot projectile
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
@@ -101,4 +114,12 @@ void ATutCharacter::PrimaryAttack()
 void ATutCharacter::Jump()
 {
 	Super::Jump();
+}
+
+void ATutCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
 }

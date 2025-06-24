@@ -2,6 +2,9 @@
 
 
 #include "TutInteractionComponent.h"
+#include "TutGameplayInterface.h"
+#include "DrawDebugHelpers.h"
+#include "ProfilingDebugging/CookStats.h"
 
 // Sets default values for this component's properties
 UTutInteractionComponent::UTutInteractionComponent()
@@ -32,3 +35,50 @@ void UTutInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
+	// Get first object close to character eyesight in an area
+void UTutInteractionComponent::PrimaryInteract()
+{
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+
+	AActor* MyOwner = GetOwner();
+	
+	FVector EyeLocation;
+	FRotator EyeRotation;
+	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+	FVector End = EyeLocation + (EyeRotation.Vector() * 1000);
+	
+	//FHitResult Hit;
+	//bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+
+	TArray<FHitResult> Hits;
+
+	float Radius = 30.f;
+	
+	FCollisionShape Shape;
+	Shape.SetSphere(Radius);
+	
+	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
+
+	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+
+	for (FHitResult Hit : Hits)
+	{
+		AActor* HitActor = Hit.GetActor();
+		if (HitActor)
+		{
+			if (HitActor->Implements<UTutGameplayInterface>())
+			{
+				APawn* MyPawn = Cast<APawn>(MyOwner);
+			
+				ITutGameplayInterface::Execute_Interact(HitActor, MyPawn);
+				break;
+			}
+		}
+		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+	}
+
+	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+
+}

@@ -12,6 +12,10 @@ class ACTIONROGUELIKE_API UTutInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	// Finds actors around us to interact with
+	void PrimaryInteract();
+	
 public:	
 	// Sets default values for this component's properties
 	UTutInteractionComponent();

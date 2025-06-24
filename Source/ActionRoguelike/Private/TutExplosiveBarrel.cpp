@@ -11,12 +11,13 @@ ATutExplosiveBarrel::ATutExplosiveBarrel()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	RootComponent = MeshComp;
 	MeshComp->SetSimulatePhysics(true);
 	MeshComp->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
-	MeshComp->OnComponentHit.AddDynamic(this, &ATutExplosiveBarrel::ApplyImpulse);
+	RootComponent = MeshComp;
+	
 	ForceComp = CreateDefaultSubobject<URadialForceComponent>("ForceComp");
 	ForceComp->SetupAttachment(MeshComp);
+	ForceComp->bImpulseVelChange = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,3 +40,10 @@ void ATutExplosiveBarrel::Tick(float DeltaTime)
 
 }
 
+void ATutExplosiveBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	MeshComp->OnComponentHit.AddDynamic(this, &ATutExplosiveBarrel::ApplyImpulse);
+
+}

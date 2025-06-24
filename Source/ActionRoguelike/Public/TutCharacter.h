@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TutInteractionComponent.h"
 #include "GameFramework/Character.h"
 #include "TutCharacter.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
+class UTutInteractionComponent;
+class UAnimMontage;
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
@@ -16,8 +19,14 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
+
 	
 public:
 	// Sets default values for this character's properties
@@ -30,6 +39,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UTutInteractionComponent* InteractionComp;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,7 +50,10 @@ protected:
 	void MoveRight(float Value);
 
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
+
 	virtual void Jump() override;
+	void PrimaryInteract();
 
 public:	
 	// Called every frame
