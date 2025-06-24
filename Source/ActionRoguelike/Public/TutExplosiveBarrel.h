@@ -33,7 +33,7 @@ protected:
 
 	// Apply explosive force
 	UFUNCTION(BlueprintCallable)
-	void ApplyImpulse(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 					UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	virtual void PostInitializeComponents() override;
