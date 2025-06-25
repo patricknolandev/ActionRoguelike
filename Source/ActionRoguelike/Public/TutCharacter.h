@@ -23,6 +23,12 @@ protected:
 	TSubclassOf<AActor> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> AbilityClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> MobilityClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
@@ -49,9 +55,17 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
+	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
+	
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
 
+	void AbilityBlackhole();
+	void AbilityBlackhole_TimeElapsed();
+
+	void MobilityDash();
+	void MobilityDash_TimeElapsed();
+	
 	virtual void Jump() override;
 	void PrimaryInteract();
 
