@@ -33,8 +33,9 @@ ATutProjectile::ATutProjectile()
 void ATutProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
+	// Projectile should not collide with player using it
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	GetInstigator()->MoveIgnoreActorAdd(this);
 	
 }
 
@@ -44,4 +45,5 @@ void ATutProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
 
