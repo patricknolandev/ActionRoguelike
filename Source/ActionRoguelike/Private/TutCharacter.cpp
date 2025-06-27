@@ -94,6 +94,8 @@ void ATutCharacter::MoveRight(float Value) // Player should move left and right 
 
 void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 {
+	if (ensure(ClassToSpawn))
+	{
 	// Trace from camera to get projectile target destination
 	FHitResult Hit;
 	int Range = 100000;
@@ -126,8 +128,7 @@ void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 	SpawnParams.Instigator = this;
 	// Shoot projectile
 	GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
-	//DrawDebugLine(GetWorld(), HandLocation, ImpactPoint, FColor::Red, false, 2.0f, 0, 2.0f);
-
+	}
 }
 
 // Shoot magic projectile from hand
