@@ -33,6 +33,8 @@ ATutProjectile::ATutProjectile()
 void ATutProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
 	
 }
 

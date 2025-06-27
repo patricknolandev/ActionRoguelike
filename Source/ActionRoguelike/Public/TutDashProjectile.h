@@ -13,5 +13,16 @@ UCLASS()
 class ACTIONROGUELIKE_API ATutDashProjectile : public ATutProjectile
 {
 	GENERATED_BODY()
+public:	
+	// Sets default values for this actor's properties
+	ATutDashProjectile();
+
+protected:
 	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 };

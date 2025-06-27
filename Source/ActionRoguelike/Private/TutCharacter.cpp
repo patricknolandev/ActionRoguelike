@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TutInteractionComponent.h"
+#include "TutProjectile.h"
 
 // Sets default values
 ATutCharacter::ATutCharacter()
@@ -91,7 +92,7 @@ void ATutCharacter::MoveRight(float Value) // Player should move left and right 
 	AddMovementInput(RightVector, Value);
 }
 
-void ATutCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
+void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 {
 	// Trace from camera to get projectile target destination
 	FHitResult Hit;

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TutInteractionComponent.h"
+#include "TutProjectile.h"
 #include "GameFramework/Character.h"
 #include "TutCharacter.generated.h"
 
@@ -20,13 +21,13 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<ATutProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> AbilityClass;
+	TSubclassOf<ATutProjectile> AbilityClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> MobilityClass;
+	TSubclassOf<ATutProjectile> MobilityClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
@@ -55,7 +56,7 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
-	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
+	void SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn);
 	
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
