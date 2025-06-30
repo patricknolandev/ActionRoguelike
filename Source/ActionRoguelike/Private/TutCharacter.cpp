@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TutInteractionComponent.h"
+#include "TutAttributeComponent.h"
 #include "TutProjectile.h"
 
 // Sets default values
@@ -24,6 +25,8 @@ ATutCharacter::ATutCharacter()
 
 	InteractionComp = CreateDefaultSubobject<UTutInteractionComponent>("InteractionComp");
 
+	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
+	
 	// Get the character to rotate towards the direction of acceleration
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	// Disable the character rotating towards the yaw of the player controller 
@@ -137,8 +140,6 @@ void ATutCharacter::PrimaryAttack()
 	PlayAnimMontage(AttackAnim);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-
-	//	GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
 }
 void ATutCharacter::PrimaryAttack_TimeElapsed()
 {

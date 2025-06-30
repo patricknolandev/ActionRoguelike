@@ -19,7 +19,6 @@ ATutDashProjectile::ATutDashProjectile()
 void ATutDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	GetWorldTimerManager().SetTimer(TimerHandle_DashExplosion, this, &ATutDashProjectile::DashExplosion, 0.2f);
 }
 
@@ -43,7 +42,6 @@ void ATutDashProjectile::DashTeleport()
 void ATutDashProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SphereComp->OnComponentHit.AddDynamic(this, &ATutDashProjectile::DashHit);
 }
 
 void ATutDashProjectile::DashHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
@@ -56,3 +54,9 @@ void ATutDashProjectile::DashHit(UPrimitiveComponent* HitComponent, AActor* Othe
 	DashExplosion();
 }
 
+void ATutDashProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	SphereComp->OnComponentHit.AddDynamic(this, &ATutDashProjectile::DashHit);
+}

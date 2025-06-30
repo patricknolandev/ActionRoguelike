@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TutInteractionComponent.h"
 #include "TutProjectile.h"
 #include "GameFramework/Character.h"
 #include "TutCharacter.generated.h"
@@ -12,6 +11,8 @@ class UCameraComponent;
 class USpringArmComponent;
 class UTutInteractionComponent;
 class UAnimMontage;
+class UTutAttributeComponent;
+class ATutProjectile;
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
@@ -49,6 +50,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UTutInteractionComponent* InteractionComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UTutAttributeComponent* AttributeComp;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

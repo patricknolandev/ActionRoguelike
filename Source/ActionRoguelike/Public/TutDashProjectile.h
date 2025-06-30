@@ -23,6 +23,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void DashHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 					UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void PostInitializeComponents() override;
 
 	void DashExplosion();
 	

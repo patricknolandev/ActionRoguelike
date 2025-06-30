@@ -2,6 +2,8 @@
 
 
 #include "TutProjectile.h"
+
+#include "TutMagicProjectile.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -33,17 +35,21 @@ ATutProjectile::ATutProjectile()
 void ATutProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	// Projectile should not collide with player using it
-	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-	GetInstigator()->MoveIgnoreActorAdd(this);
-	
+
+	// Projectile should not collide with actor using it
+	AActor* InstigatorActor = GetInstigator();
+	// Might be nullptr if used by other actors than player
+	if (InstigatorActor)
+	{
+		SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+		GetInstigator()->MoveIgnoreActorAdd(this);
+	}
 }
 
 // Called every frame
 void ATutProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 
