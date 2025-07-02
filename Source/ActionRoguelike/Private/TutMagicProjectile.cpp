@@ -14,6 +14,7 @@ ATutMagicProjectile::ATutMagicProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Projectile can deal damage
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ATutMagicProjectile::OnActorOverlap);
 	
 	// Speed of projectile
@@ -25,13 +26,14 @@ ATutMagicProjectile::ATutMagicProjectile()
 void ATutMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (OtherActor && OtherActor != GetInstigator())
 	{
 		// Get the attribute component of hit actor
 		UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(OtherActor->GetComponentByClass(UTutAttributeComponent::StaticClass()));
-		if (AttributeComp)
+		if (AttributeComp) // Hit actor may not have attributes
 		{
-			AttributeComp->ApplyHealthChange(-20.0f);
+			// Deal damage and end projectile
+			AttributeComp->ApplyHealthChange(-20.0f); 
 
 			Destroy();
 		}

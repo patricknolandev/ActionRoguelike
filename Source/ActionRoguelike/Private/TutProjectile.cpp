@@ -36,11 +36,9 @@ void ATutProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Projectile should not collide with actor using it
-	AActor* InstigatorActor = GetInstigator();
-	// Might be nullptr if used by other actors than player
-	if (InstigatorActor)
+	if (GetInstigator()) // Might be nullptr if used by other actors than player
 	{
+		// Projectile should not collide with actor using it
 		SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
 		GetInstigator()->MoveIgnoreActorAdd(this);
 	}
