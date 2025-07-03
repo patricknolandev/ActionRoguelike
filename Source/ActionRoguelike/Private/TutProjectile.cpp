@@ -7,35 +7,36 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "UObject/FastReferenceCollector.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATutProjectile::ATutProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	// Create collision and set it as root transform component
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentHit.AddDynamic(this, &ATutProjectile::OnActorHit);
 	RootComponent = SphereComp;
 	
-	// Create particle component and attach to root
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
-	EffectComp->SetupAttachment(SphereComp);
+	EffectComp->SetupAttachment(RootComponent);
 	
-	// Create projectile movement component and set initial speed
 	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
-
-	// Make the projectile visually rotate to follow its velocity direction, and have initial velocity
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
+	MovementComp->ProjectileGravityScale = 0.0f;
+	MovementComp->InitialSpeed = 8000;
 }
 
-// Called when the game starts or when spawned
-void ATutProjectile::BeginPlay()
+void ATutProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::BeginPlay();
+	Explode();
+}
 
+void ATutProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 	if (GetInstigator()) // Might be nullptr if used by other actors than player
 	{
 		// Projectile should not collide with actor using it
@@ -44,10 +45,19 @@ void ATutProjectile::BeginPlay()
 	}
 }
 
-// Called every frame
-void ATutProjectile::Tick(float DeltaTime)
+void ATutProjectile::Explode_Implementation()
 {
-	Super::Tick(DeltaTime);
+	if (ensure(!IsPendingKillPending()))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+
+		Destroy();
+	}
 }
 
+// Called when the game starts or when spawned
+void ATutProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+}
 

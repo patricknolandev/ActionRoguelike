@@ -10,7 +10,7 @@ class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API ATutProjectile : public AActor
 {
 	GENERATED_BODY()
@@ -21,22 +21,29 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* ImpactVFX;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* SphereComp;
 
 	// Give the attack velocity
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UProjectileMovementComponent* MovementComp;
 
 	// Make attack visible in world
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UParticleSystemComponent* EffectComp;
+
+	UFUNCTION()
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Explode();
+
+	virtual void PostInitializeComponents() override;
 	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

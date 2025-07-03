@@ -18,26 +18,19 @@ public:
 	ATutDashProjectile();
 
 protected:
-	FTimerHandle TimerHandle_DashExplosion;
 
-	UFUNCTION(BlueprintCallable)
-	void DashHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-					UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	virtual void PostInitializeComponents() override;
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float TeleportDelay;
 
-	void DashExplosion();
-	
-	UPROPERTY(EditAnywhere, Category= "Effects")
-	UParticleSystem* DashHitFX;
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float DetonateDelay;
 
-	FTimerHandle TimerHandle_Teleport;
-	FVector TeleportTargetLocation;
+	FTimerHandle TimerHandle_DelayedDetonate;
+
 	void DashTeleport();
 
+	virtual void Explode_Implementation() override;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 };

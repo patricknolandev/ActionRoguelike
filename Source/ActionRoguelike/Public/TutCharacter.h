@@ -21,6 +21,12 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 
 protected:
 
+	UPROPERTY(EditAnywhere, Category = "Targeting")
+	float SweepRadius;
+
+	UPROPERTY(EditAnywhere, Category = "Targeting")
+	float SweepDistanceFallback;
+	
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<ATutProjectile> ProjectileClass;
 

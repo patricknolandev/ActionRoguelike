@@ -4,7 +4,6 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "TutInteractionComponent.h"
 #include "TutAttributeComponent.h"
 #include "TutProjectile.h"
@@ -99,38 +98,44 @@ void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 {
 	if (ensure(ClassToSpawn))
 	{
-	// Trace from camera to get projectile target destination
-	FHitResult Hit;
-	int Range = 100000;
-	FVector CameraLocation = CameraComp->GetComponentLocation();
-	FVector End = CameraLocation + (CameraComp->GetForwardVector() * Range);
-	FCollisionObjectQueryParams ObjectParams;
-	ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this); // ignore the player character in trace
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, CameraLocation, End, ObjectParams, CollisionParams);
-	FVector ImpactPoint;
-	if (bBlockingHit) // set target to line trace hit location or to end of trace
-	{
-		ImpactPoint = Hit.Location;
-	}
-	else
-	{
-		ImpactPoint = End;	
-	}
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	// Store the hand spawn location and target trace location
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(HandLocation, ImpactPoint);
-	FTransform SpawnTM = FTransform(TargetRot, HandLocation);
-	
-	// Always shoot even when clipping with objects on spawn
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-	// Shoot projectile
-	GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
+		SweepRadius = 20.0f;
+		SweepDistanceFallback = 5000;
+		
+		// Always shoot even when clipping with objects on spawn
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = GetInstigator();
+
+		FCollisionShape Shape;
+		Shape.SetSphere(SweepRadius);
+		
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(this); // ignore the player character in trace
+		
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		FVector TraceDirection = GetInstigator()->GetControlRotation().Vector();
+		FVector TraceStart = GetInstigator()->GetPawnViewLocation() + (TraceDirection * SweepRadius);
+		// Target a point far in the distance as fallback
+		FVector TraceEnd = TraceStart + (TraceDirection * SweepDistanceFallback);
+
+		// If we can get a target with a sphere sweep, target the valid object instead
+		FHitResult Hit;
+		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjectParams, Shape, CollisionParams))
+		{
+			TraceEnd = Hit.ImpactPoint;
+		}
+		
+		FRotator ProjectileRotation = (TraceEnd - HandLocation).Rotation();
+		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
+		
+		// Shoot projectile at target
+		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
 	}
 }
 
