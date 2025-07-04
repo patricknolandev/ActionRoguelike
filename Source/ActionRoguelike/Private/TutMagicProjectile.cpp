@@ -19,6 +19,8 @@ ATutMagicProjectile::ATutMagicProjectile()
 	
 	// Speed of projectile
 	MovementComp->InitialSpeed = 2000.f;
+
+	DamageAmount = -20.f;
 	
 }
 
@@ -33,24 +35,8 @@ void ATutMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 		if (AttributeComp) // Hit actor may not have attributes
 		{
 			// Deal damage and end projectile
-			AttributeComp->ApplyHealthChange(-20.0f); 
-
-			Destroy();
+			AttributeComp->ApplyHealthChange(DamageAmount); 
+			Super::Explode();
 		}
 	}
 }
-
-// Called when the game starts or when spawned
-void ATutMagicProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ATutMagicProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

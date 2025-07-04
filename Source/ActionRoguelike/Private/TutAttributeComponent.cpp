@@ -18,3 +18,8 @@ bool UTutAttributeComponent::ApplyHealthChange(float Delta)
 	
 	return true;
 }
+
+bool UTutAttributeComponent::IsAlive() const
+{
+	return Health > 0.0f;
+}
