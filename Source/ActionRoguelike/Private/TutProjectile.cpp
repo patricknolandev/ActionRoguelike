@@ -2,12 +2,10 @@
 
 
 #include "TutProjectile.h"
-
-#include "TutMagicProjectile.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "UObject/FastReferenceCollector.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -26,17 +24,22 @@ ATutProjectile::ATutProjectile()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	MovementComp->ProjectileGravityScale = 0.0f;
 	MovementComp->InitialSpeed = 8000;
+
+	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
 }
 
 void ATutProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+	UGameplayStatics::PlayWorldCameraShake(this, ImpactCameraShake, Hit.Location, 500.f, 500.f);
 	Explode();
 }
 
 void ATutProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	AudioComp->Play(0); // Play flight sound
 	if (GetInstigator()) // Might be nullptr if used by other actors than player
 	{
 		// Projectile should not collide with actor using it
@@ -50,7 +53,7 @@ void ATutProjectile::Explode_Implementation()
 	if (ensure(!IsPendingKillPending()))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
-
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, GetActorLocation(), GetActorRotation());
 		Destroy();
 	}
 }

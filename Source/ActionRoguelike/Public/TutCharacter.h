@@ -13,6 +13,7 @@ class UTutInteractionComponent;
 class UAnimMontage;
 class UTutAttributeComponent;
 class ATutProjectile;
+class UParticleSystem;
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
@@ -21,6 +22,9 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* AttachedVFX;
+	
 	UPROPERTY(EditAnywhere, Category = "Targeting")
 	float SweepRadius;
 

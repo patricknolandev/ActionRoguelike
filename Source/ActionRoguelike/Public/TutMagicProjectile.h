@@ -21,3 +21,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DamageAmount;
+};

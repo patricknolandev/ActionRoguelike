@@ -9,6 +9,8 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
+class UParticleSystem;
+class UAudioComponent;
 
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API ATutProjectile : public AActor
@@ -26,6 +28,15 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	UParticleSystem* ImpactVFX;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UCameraShakeBase> ImpactCameraShake;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UAudioComponent* AudioComp;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* ImpactSFX;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* SphereComp;

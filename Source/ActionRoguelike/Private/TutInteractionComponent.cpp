@@ -4,7 +4,6 @@
 #include "TutInteractionComponent.h"
 #include "TutGameplayInterface.h"
 #include "DrawDebugHelpers.h"
-#include "ProfilingDebugging/CookStats.h"
 
 // Sets default values for this component's properties
 UTutInteractionComponent::UTutInteractionComponent()
@@ -60,7 +59,7 @@ void UTutInteractionComponent::PrimaryInteract()
 	Shape.SetSphere(Radius);
 	
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
-
+	
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
 	for (FHitResult Hit : Hits)
@@ -74,6 +73,7 @@ void UTutInteractionComponent::PrimaryInteract()
 			
 				ITutGameplayInterface::Execute_Interact(HitActor, MyPawn);
 				break;
+				
 			}
 		}
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);

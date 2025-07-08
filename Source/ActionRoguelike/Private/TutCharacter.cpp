@@ -7,6 +7,7 @@
 #include "TutInteractionComponent.h"
 #include "TutAttributeComponent.h"
 #include "TutProjectile.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATutCharacter::ATutCharacter()
@@ -150,6 +151,7 @@ void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 void ATutCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
+	UGameplayStatics::SpawnEmitterAttached(AttachedVFX, GetMesh(), FName("Muzzle_01"));
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 }
@@ -198,6 +200,12 @@ void ATutCharacter::PrimaryInteract()
 void ATutCharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
+	// Taking damage
+	if (NewHealth > 0 && Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->GetTimeSeconds());
+	}
+	// Player dies
 	if (NewHealth <= 0 && Delta < 0.0f)
 	{
 		APlayerController* PC = Cast<APlayerController>(GetController());
