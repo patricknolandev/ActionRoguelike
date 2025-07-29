@@ -3,35 +3,34 @@
 
 #include "TutPickupHealthPotion.h"
 #include "TutAttributeComponent.h"
-#include "Components/SphereComponent.h"
 
 ATutPickupHealthPotion::ATutPickupHealthPotion()
 {
-	HealAmount = 50.0f;
-	RespawnTime = 10.0f;
 	// Don't want interact to pick up the mesh collision
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+	MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	HealAmount = 100.0f;
 }
 
 void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
+	if (!ensure(InstigatorPawn))
+	{
+		return;
+	}
+	
 	if (UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(InstigatorPawn->GetComponentByClass(UTutAttributeComponent::StaticClass())))
 	{
-		if (AttributeComp->IsAtFullHealth())
+		// Check if not at max health
+		if (ensure(AttributeComp && !AttributeComp->IsAtFullHealth()))
 		{
-			return;
+			// Only activate on successful heal
+			if (AttributeComp->ApplyHealthChange(HealAmount))
+			{
+				HideAndCooldownPickup();
+			}
 		}
-
-		AttributeComp->ApplyHealthChange(HealAmount);
-		
-		SphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		MeshComp->SetVisibility(false, true);
-		GetWorldTimerManager().SetTimer(TimerHandle_PotionRespawn, this, &ATutPickupHealthPotion::Respawn, RespawnTime);
 	}
-}
-
-void ATutPickupHealthPotion::Respawn()
-{
-	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	MeshComp->SetVisibility(true, true);
 }

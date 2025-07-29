@@ -8,27 +8,32 @@
 // Sets default values
 ATutItemPickup::ATutItemPickup()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
+	SphereComp->SetCollisionProfileName("Powerup");
 	RootComponent = SphereComp;
 
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	MeshComp->SetupAttachment(RootComponent);
+	RespawnTime = 10.0f;
 }
 
-// Called when the game starts or when spawned
-void ATutItemPickup::BeginPlay()
+void ATutItemPickup::Interact_Implementation(APawn* InstigatorPawn)
 {
-	Super::BeginPlay();
-	
+	// logic in derived classes
 }
 
-// Called every frame
-void ATutItemPickup::Tick(float DeltaTime)
+void ATutItemPickup::ShowPickup()
 {
-	Super::Tick(DeltaTime);
+	SetPickupState(true);
+}
 
+void ATutItemPickup::HideAndCooldownPickup()
+{
+	SetPickupState(false);
+	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ATutItemPickup::ShowPickup, RespawnTime);
+}
+
+void ATutItemPickup::SetPickupState(bool bNewIsActive)
+{
+	SetActorEnableCollision(bNewIsActive);
+	RootComponent->SetVisibility(bNewIsActive, true);
 }
 

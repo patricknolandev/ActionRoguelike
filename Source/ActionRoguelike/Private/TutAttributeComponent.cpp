@@ -10,14 +10,16 @@ UTutAttributeComponent::UTutAttributeComponent()
 	HealthMax = 100;
 }
 
-
 bool UTutAttributeComponent::ApplyHealthChange(float Delta)
 {
-	Health += Delta;
-	Health = FMath::Clamp(Health, 0, HealthMax);
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	float OldHealth = Health;
+
+	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
+
+	float ActualDelta = Health - OldHealth;
+	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
 	
-	return true;
+	return ActualDelta != 0;
 }
 
 bool UTutAttributeComponent::IsAlive() const
@@ -28,4 +30,9 @@ bool UTutAttributeComponent::IsAlive() const
 bool UTutAttributeComponent::IsAtFullHealth() const
 {
 	return Health >= HealthMax || FMath::IsNearlyEqual(Health, HealthMax, KINDA_SMALL_NUMBER);
+}
+
+float UTutAttributeComponent::GetHealthMax() const
+{
+	return HealthMax;
 }

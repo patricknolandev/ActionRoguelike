@@ -10,6 +10,9 @@
 /**
  * 
  */
+
+class UStaticMeshComponent;
+
 UCLASS()
 class ACTIONROGUELIKE_API ATutPickupHealthPotion : public ATutItemPickup, public ITutGameplayInterface
 {
@@ -22,13 +25,11 @@ public:
 	void Interact_Implementation(APawn* InstigatorPawn);
 
 protected:
-	void Respawn();
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Gameplay")
-	float RespawnTime;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Gameplay")
 	float HealAmount;
 	
-	FTimerHandle TimerHandle_PotionRespawn;
 };

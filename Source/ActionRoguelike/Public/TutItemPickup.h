@@ -7,7 +7,6 @@
 #include "TutItemPickup.generated.h"
 
 class USphereComponent;
-class UStaticMeshComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutItemPickup : public AActor
@@ -17,20 +16,20 @@ class ACTIONROGUELIKE_API ATutItemPickup : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ATutItemPickup();
+	
+	void Interact_Implementation(APawn* InstigatorPawn);
 
 protected:
 
 	UPROPERTY(EditAnywhere)
 	USphereComponent* SphereComp;
-	
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* MeshComp;
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Gameplay")
+	float RespawnTime;
 
+	FTimerHandle TimerHandle_RespawnTimer;
+	
+	void ShowPickup();
+	void HideAndCooldownPickup();
+	void SetPickupState(bool bNewIsActive);
 };
