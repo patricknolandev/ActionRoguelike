@@ -22,8 +22,11 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Effects")
+	FName HandSocketName;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* AttachedVFX;
+	UParticleSystem* CastingEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "Targeting")
 	float SweepRadius;
@@ -73,6 +76,7 @@ protected:
 	void SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn);
 	
 	void PrimaryAttack();
+	void StartAttackEffects();
 	void PrimaryAttack_TimeElapsed();
 
 	void AbilityBlackhole();

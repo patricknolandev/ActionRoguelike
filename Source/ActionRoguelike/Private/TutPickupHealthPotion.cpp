@@ -20,8 +20,9 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		return;
 	}
-	
-	if (UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(InstigatorPawn->GetComponentByClass(UTutAttributeComponent::StaticClass())))
+
+	UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(InstigatorPawn->GetComponentByClass(UTutAttributeComponent::StaticClass()));
+	if (AttributeComp)
 	{
 		// Check if not at max health
 		if (ensure(AttributeComp && !AttributeComp->IsAtFullHealth()))

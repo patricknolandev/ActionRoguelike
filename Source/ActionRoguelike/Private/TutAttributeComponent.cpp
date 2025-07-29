@@ -32,6 +32,11 @@ bool UTutAttributeComponent::IsAtFullHealth() const
 	return Health >= HealthMax || FMath::IsNearlyEqual(Health, HealthMax, KINDA_SMALL_NUMBER);
 }
 
+bool UTutAttributeComponent::IsLowHealth() const
+{
+	return Health <= HealthMax * 0.25f;
+}
+
 float UTutAttributeComponent::GetHealthMax() const
 {
 	return HealthMax;

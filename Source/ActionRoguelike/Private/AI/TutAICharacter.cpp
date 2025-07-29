@@ -6,10 +6,12 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
+#include "TutAttributeComponent.h"
 
 ATutAICharacter::ATutAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
 }
 
 void ATutAICharacter::PostInitializeComponents()

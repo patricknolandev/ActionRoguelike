@@ -31,6 +31,8 @@ ATutCharacter::ATutCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	// Disable the character rotating towards the yaw of the player controller 
 	bUseControllerRotationYaw = false;
+
+	HandSocketName = "Muzzle_01";
 }
 
 void ATutCharacter::PostInitializeComponents()
@@ -106,7 +108,7 @@ void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 {
 	if (ensure(ClassToSpawn))
 	{
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
 
 		SweepRadius = 20.0f;
 		SweepDistanceFallback = 5000;
@@ -150,11 +152,18 @@ void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
 // Shoot magic projectile from hand
 void ATutCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-	UGameplayStatics::SpawnEmitterAttached(AttachedVFX, GetMesh(), FName("Muzzle_01"));
+	StartAttackEffects();
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 }
+
+void ATutCharacter::StartAttackEffects()
+{
+	PlayAnimMontage(AttackAnim);
+	
+	UGameplayStatics::SpawnEmitterAttached(CastingEffect, GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+}
+
 void ATutCharacter::PrimaryAttack_TimeElapsed()
 {
 	SpawnProjectile(ProjectileClass);

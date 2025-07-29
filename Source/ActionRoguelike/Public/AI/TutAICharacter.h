@@ -7,6 +7,7 @@
 #include "TutAICharacter.generated.h"
 
 class UPawnSensingComponent;
+class UTutAttributeComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutAICharacter : public ACharacter
@@ -23,6 +24,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UTutAttributeComponent* AttributeComp;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);

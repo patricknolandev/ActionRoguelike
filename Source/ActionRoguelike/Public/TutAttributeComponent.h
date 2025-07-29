@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAtFullHealth() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsLowHealth() const;
+
 	float GetHealthMax() const;
 
 };
