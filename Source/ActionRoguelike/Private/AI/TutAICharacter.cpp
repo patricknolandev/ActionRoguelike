@@ -19,6 +19,8 @@ void ATutAICharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ATutAICharacter::OnPawnSeen);
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ATutAICharacter::OnPawnSeen(APawn* Pawn)
@@ -29,7 +31,5 @@ void ATutAICharacter::OnPawnSeen(APawn* Pawn)
 		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
 
 		BBComp->SetValueAsObject("TargetActor", Pawn);
-
-		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
 	}
 }
