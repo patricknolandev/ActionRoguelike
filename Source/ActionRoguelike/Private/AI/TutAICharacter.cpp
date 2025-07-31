@@ -15,6 +15,8 @@ ATutAICharacter::ATutAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
+
+	TimeToHitParamName = "TimeToHit";
 }
 
 
@@ -52,6 +54,8 @@ void ATutAICharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeComp
 		{
 			SetTargetActor(InstigatorActor); // Focus the player who hit us
 		}
+
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->GetTimeSeconds());
 		
 		if (NewHealth <= 0.0f) // If AI just died
 		{

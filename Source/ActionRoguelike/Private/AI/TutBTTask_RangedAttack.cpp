@@ -3,8 +3,15 @@
 
 #include "AI/TutBTTask_RangedAttack.h"
 #include "AIController.h"
+#include "TutAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
+
+
+UTutBTTask_RangedAttack::UTutBTTask_RangedAttack()
+{
+	MaxBulletSpread = 2.0f;
+}
 
 // Spawn an attack that is the direction of the target actor
 EBTNodeResult::Type UTutBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -25,10 +32,20 @@ EBTNodeResult::Type UTutBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent&
 		{
 			return EBTNodeResult::Failed;
 		}
+
+		if (!UTutAttributeComponent::IsActorAlive(TargetActor))
+		{
+			return EBTNodeResult::Failed;
+		}
+		
 		// Get direction and rotation of target actor to attack
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
 		FRotator MuzzleRotation = Direction.Rotation();
 
+		MuzzleRotation.Pitch +=FMath::RandRange(0.0f, MaxBulletSpread);
+		MuzzleRotation.Yaw +=FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
+
+		
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		Params.Instigator = MyPawn;

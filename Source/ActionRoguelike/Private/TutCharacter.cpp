@@ -7,6 +7,7 @@
 #include "TutInteractionComponent.h"
 #include "TutAttributeComponent.h"
 #include "TutProjectile.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -33,6 +34,8 @@ ATutCharacter::ATutCharacter()
 	bUseControllerRotationYaw = false;
 
 	HandSocketName = "Muzzle_01";
+
+	TimeToHitParamName = "TimeToHit";
 }
 
 void ATutCharacter::PostInitializeComponents()
@@ -212,13 +215,14 @@ void ATutCharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeCompon
 	// Taking damage
 	if (NewHealth > 0 && Delta < 0.0f)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->GetTimeSeconds());
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->GetTimeSeconds());
 	}
 	// Player dies
 	if (NewHealth <= 0 && Delta < 0.0f)
 	{
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		DisableInput(PC);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
