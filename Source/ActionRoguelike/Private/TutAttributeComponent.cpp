@@ -10,14 +10,14 @@ UTutAttributeComponent::UTutAttributeComponent()
 	HealthMax = 100;
 }
 
-bool UTutAttributeComponent::ApplyHealthChange(float Delta)
+bool UTutAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	float OldHealth = Health;
 
 	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
-	float ActualDelta = Health - OldHealth;
-	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
+	float ActualDelta = Health - OldHealth; // if already dead (0 health), don't trigger apply health change
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 	
 	return ActualDelta != 0;
 }
@@ -40,4 +40,25 @@ bool UTutAttributeComponent::IsLowHealth() const
 float UTutAttributeComponent::GetHealthMax() const
 {
 	return HealthMax;
+}
+
+UTutAttributeComponent* UTutAttributeComponent::GetAttributes(AActor* FromActor)
+{
+	if (FromActor)
+	{
+		return FromActor->FindComponentByClass<UTutAttributeComponent>();
+	}
+
+	return nullptr;
+}
+
+bool UTutAttributeComponent::IsActorAlive(AActor* Actor)
+{
+	UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(Actor);
+	if (AttributeComp)
+	{
+		return AttributeComp->IsAlive();
+	}
+
+	return false;
 }

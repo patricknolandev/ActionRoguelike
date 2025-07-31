@@ -21,7 +21,7 @@ EBTNodeResult::Type UTutBTTask_HealSelf::ExecuteTask(UBehaviorTreeComponent& Own
 			UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(MyPawn->GetComponentByClass(UTutAttributeComponent::StaticClass()));
 			if (ensure(AttributeComp))
 			{
-				bool bHealed = AttributeComp->ApplyHealthChange(HealAmount);
+				bool bHealed = AttributeComp->ApplyHealthChange(MyPawn, HealAmount);
 				return bHealed ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 			}
 	}

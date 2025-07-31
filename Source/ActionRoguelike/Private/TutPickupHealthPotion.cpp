@@ -21,14 +21,14 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		return;
 	}
 
-	UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(InstigatorPawn->GetComponentByClass(UTutAttributeComponent::StaticClass()));
+	UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(InstigatorPawn);
 	if (AttributeComp)
 	{
 		// Check if not at max health
 		if (ensure(AttributeComp && !AttributeComp->IsAtFullHealth()))
 		{
 			// Only activate on successful heal
-			if (AttributeComp->ApplyHealthChange(HealAmount))
+			if (AttributeComp->ApplyHealthChange(this, HealAmount))
 			{
 				HideAndCooldownPickup();
 			}

@@ -4,6 +4,7 @@
 #include "TutGameModeBase.h"
 
 #include "EngineUtils.h"
+#include "DrawDebugHelpers.h"
 #include "TutAttributeComponent.h"
 #include "AI/TutAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -23,6 +24,34 @@ void ATutGameModeBase::StartPlay()
 
 void ATutGameModeBase::SpawnBotsTimerElapsed()
 {
+	// Count the number of alive bots and check against max allowed bots
+	int32 NumOfAliveBots = 0;
+	for (ATutAICharacter* Bot : TActorRange<ATutAICharacter>(GetWorld()))
+	{
+		UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(Bot);
+		if (ensure(AttributeComp && AttributeComp->IsAlive()))
+		{
+			NumOfAliveBots++;
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Found %i alive bots."), NumOfAliveBots);
+	
+	float MaxBotCount = 10.f;
+
+	// Exposed bot count over time curve
+	if (DifficultyCurve)
+	{
+		MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
+	}
+
+	// Don't spawn bots if we equal or exceed the allowed curve rate
+	if (NumOfAliveBots >= MaxBotCount)
+	{
+		UE_LOG(LogTemp, Log, TEXT("At maximum bot capacity. Skipping bot spawn."));
+		return;
+	}
+	
 	FEnvQueryRequest Request(SpawnBotQuery, this);
 	Request.Execute(EEnvQueryRunMode::RandomBest5Pct, this, &ATutGameModeBase::OnBotSpawnQueryCompleted);
 }
@@ -35,32 +64,7 @@ void ATutGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Resu
 		UE_LOG(LogTemp, Warning, TEXT("Spawn bot EQS Query failed!"));
 		return;
 	}
-
-	// Count the number of alive bots and check against max allowed bots
-	int32 NumOfAliveBots = 0;
-	for (ATutAICharacter* Bot : TActorRange<ATutAICharacter>(GetWorld()))
-	{
-		UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(Bot->GetComponentByClass(UTutAttributeComponent::StaticClass()));
-		if (ensure(AttributeComp && AttributeComp->IsAlive()))
-		{
-			NumOfAliveBots++;
-		}
-	}
-
-	float MaxBotCount = 10.f;
-
-	// Exposed bot count over time curve
-	if (DifficultyCurve)
-	{
-		MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
-	}
-
-	// Don't spawn bots if we equal or exceed the allowed curve rate
-	if (NumOfAliveBots >= MaxBotCount)
-	{
-		return;
-	}
-
+	
 	// Spawn bots
 	TArray<FVector> Locations;
 	QueryResult->GetAllAsLocations(Locations);
@@ -68,5 +72,6 @@ void ATutGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Resu
 	if (Locations.IsValidIndex(0))
 	{
 		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
+		DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.0f);
 	}
 }

@@ -20,7 +20,7 @@ ATutMagicProjectile::ATutMagicProjectile()
 	// Speed of projectile
 	MovementComp->InitialSpeed = 2000.f;
 
-	DamageAmount = -20.f;
+	DamageAmount = 20.f;
 	
 }
 
@@ -35,7 +35,7 @@ void ATutMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 		if (AttributeComp) // Hit actor may not have attributes
 		{
 			// Deal damage and end projectile
-			AttributeComp->ApplyHealthChange(DamageAmount); 
+			AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount); 
 			Super::Explode();
 		}
 	}
