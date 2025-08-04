@@ -8,7 +8,8 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "TutAttributeComponent.h"
-#include "AI/TutAIController.h"
+#include "TutWorldUserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
 
 ATutAICharacter::ATutAICharacter()
@@ -55,6 +56,16 @@ void ATutAICharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeComp
 			SetTargetActor(InstigatorActor); // Focus the player who hit us
 		}
 
+		if (ActiveHealthBar == nullptr) // if we don't already have a healthbar showing
+		{
+			ActiveHealthBar = CreateWidget<UTutWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBar)
+			{
+				ActiveHealthBar->AttachedActor = this;
+				ActiveHealthBar->AddToViewport();
+			}
+		}
+		
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->GetTimeSeconds());
 		
 		if (NewHealth <= 0.0f) // If AI just died
