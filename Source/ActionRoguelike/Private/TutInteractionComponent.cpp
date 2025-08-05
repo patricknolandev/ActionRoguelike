@@ -5,6 +5,8 @@
 #include "TutGameplayInterface.h"
 #include "DrawDebugHelpers.h"
 
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("tut.InteractionDebugDraw"), false, TEXT("Enable debug lines for interaction component."), ECVF_Cheat);
+
 // Sets default values for this component's properties
 UTutInteractionComponent::UTutInteractionComponent()
 {
@@ -37,6 +39,8 @@ void UTutInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// Get first object close to character eyesight in an area
 void UTutInteractionComponent::PrimaryInteract()
 {
+	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
+	
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -64,6 +68,11 @@ void UTutInteractionComponent::PrimaryInteract()
 
 	for (FHitResult Hit : Hits)
 	{
+		if (bDebugDraw)
+		{
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+		}
+		
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor)
 		{
@@ -73,12 +82,11 @@ void UTutInteractionComponent::PrimaryInteract()
 			
 				ITutGameplayInterface::Execute_Interact(HitActor, MyPawn);
 				break;
-				
 			}
 		}
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 	}
-
-	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
-
+	if (bDebugDraw)
+	{
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	}
 }

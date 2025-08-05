@@ -45,18 +45,9 @@ void ATutCharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ATutCharacter::OnHealthChanged);
 }
 
-// Called when the game starts or when spawned
-void ATutCharacter::BeginPlay()
+FVector ATutCharacter::GetPawnViewLocation() const
 {
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ATutCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	return CameraComp->GetComponentLocation(); // overrides eye location used in interaction trace
 }
 
 // Called to bind functionality to input - how we control the player character
@@ -76,6 +67,11 @@ void ATutCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Mobility", IE_Pressed, this, &ATutCharacter::MobilityDash);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATutCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ATutCharacter::PrimaryInteract);
+}
+
+void ATutCharacter::HealSelf(float Amount /* = 100 */)
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
 }
 
 void ATutCharacter::MoveForward(float Value) // Player should move forward in direction of camera

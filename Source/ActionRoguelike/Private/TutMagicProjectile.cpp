@@ -3,6 +3,7 @@
 
 #include "TutMagicProjectile.h"
 #include "TutAttributeComponent.h"
+#include "TutGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -25,18 +26,15 @@ ATutMagicProjectile::ATutMagicProjectile()
 }
 
 // Apply damage to hit actors
-void ATutMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void ATutMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor != GetInstigator())
-	{
-		// Get the attribute component of hit actor
-		UTutAttributeComponent* AttributeComp = Cast<UTutAttributeComponent>(OtherActor->GetComponentByClass(UTutAttributeComponent::StaticClass()));
-		if (AttributeComp) // Hit actor may not have attributes
-		{
-			// Deal damage and end projectile
-			AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount); 
-			Super::Explode();
-		}
-	}
+	UE_LOG(LogTemp, Warning, TEXT("OnActorOverlap Called"));
+	 if (OtherActor && OtherActor != GetInstigator())
+	 {
+		 if (UTutGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		 {
+		 	Super::Explode();
+		 }
+	 }
 }

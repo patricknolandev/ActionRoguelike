@@ -11,12 +11,18 @@
 #include "TutWorldUserWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ATutAICharacter::ATutAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // Make sure the AI always uses the controller so it will run behavior
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetMesh()->SetGenerateOverlapEvents(true); // necessary for projectiles to add impulses to ragdoll enemies
+	
 	TimeToHitParamName = "TimeToHit";
 }
 
@@ -28,7 +34,6 @@ void ATutAICharacter::PostInitializeComponents()
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ATutAICharacter::OnPawnSeen);
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ATutAICharacter::OnHealthChanged);
 
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // Make sure the AI always uses the controller so it will run behavior
 }
 
 void ATutAICharacter::OnPawnSeen(APawn* Pawn)
@@ -79,6 +84,7 @@ void ATutAICharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeComp
 			// ragdoll and set correct collision
 			GetMesh()->SetAllBodiesSimulatePhysics(true);
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCharacterMovement()->DisableMovement();
 			GetMesh()->SetCollisionProfileName("Ragdoll");
 			// set lifespan (how long before we destroy actor)
 			SetLifeSpan(10.0f);
