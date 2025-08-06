@@ -10,6 +10,24 @@ ATutPlayerState::ATutPlayerState()
 }
 
 
+ATutPlayerState* ATutPlayerState::GetPlayerState(AActor* FromActor)
+{
+	if (FromActor)
+	{
+		APawn* MyPawn = Cast<APawn>(FromActor);
+		if (MyPawn)
+		{
+			return MyPawn->GetPlayerState<ATutPlayerState>();
+		}
+		AController* MyController = Cast<AController>(FromActor);
+		if (MyController)
+		{
+			return MyController->GetPlayerState<ATutPlayerState>();
+		}
+	}
+	return nullptr;
+}
+
 bool ATutPlayerState::ApplyCreditChange(AActor* InstigatorActor, float Delta)
 {
 
@@ -19,11 +37,16 @@ bool ATutPlayerState::ApplyCreditChange(AActor* InstigatorActor, float Delta)
 
 	float ActualDelta = Credits - OldCredits;
 	OnCreditsChanged.Broadcast(InstigatorActor, this, Credits, ActualDelta);
-
-	// Not enough credits for transaction
-	if (ActualDelta < 0.0f && Credits == 0.0f)
-	{
-		// TO-DO
-	}
+	
 	return ActualDelta != 0.0f;
+}
+
+bool ATutPlayerState::HasEnoughCredits(float Delta) const
+{
+	return Credits >= Delta;
+}
+
+bool ATutPlayerState::IsAtFullCredits() const
+{
+	return Credits >= CreditsMax || FMath::IsNearlyEqual(Credits, CreditsMax, KINDA_SMALL_NUMBER);
 }

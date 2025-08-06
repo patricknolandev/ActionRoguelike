@@ -31,9 +31,13 @@ protected:
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static ATutPlayerState* GetPlayerState(AActor* FromActor);
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyCreditChange(AActor* InstigatorActor, float Delta);
 
-	bool HasEnoughCredits(float Delta);
+	bool HasEnoughCredits(float Delta) const;
+	bool IsAtFullCredits() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnCreditsChanged OnCreditsChanged; // use this in BP to update HUD

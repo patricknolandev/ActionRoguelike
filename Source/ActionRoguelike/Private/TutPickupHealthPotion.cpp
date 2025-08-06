@@ -3,6 +3,7 @@
 
 #include "TutPickupHealthPotion.h"
 #include "TutAttributeComponent.h"
+#include "TutPlayerState.h"
 
 ATutPickupHealthPotion::ATutPickupHealthPotion()
 {
@@ -12,6 +13,7 @@ ATutPickupHealthPotion::ATutPickupHealthPotion()
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HealAmount = 100.0f;
+	CostCredits = 5.0f;
 }
 
 void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
@@ -20,17 +22,19 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		return;
 	}
-
 	UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(InstigatorPawn);
 	if (AttributeComp)
 	{
-		// Check if not at max health
 		if (ensure(AttributeComp && !AttributeComp->IsAtFullHealth()))
 		{
-			// Only activate on successful heal
-			if (AttributeComp->ApplyHealthChange(this, HealAmount))
+			ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn);
+			if (ensure(PS && PS->HasEnoughCredits(CostCredits)))
 			{
-				HideAndCooldownPickup();
+				// Only activate on successful heal and credit deduction
+				if (AttributeComp->ApplyHealthChange(this, HealAmount) && PS->ApplyCreditChange(this, -CostCredits))
+				{
+					HideAndCooldownPickup();
+				}
 			}
 		}
 	}

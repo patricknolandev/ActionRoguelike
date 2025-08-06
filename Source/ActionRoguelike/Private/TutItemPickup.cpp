@@ -13,6 +13,7 @@ ATutItemPickup::ATutItemPickup()
 	RootComponent = SphereComp;
 
 	RespawnTime = 10.0f;
+	CostCredits = 0.0f;
 }
 
 void ATutItemPickup::Interact_Implementation(APawn* InstigatorPawn)

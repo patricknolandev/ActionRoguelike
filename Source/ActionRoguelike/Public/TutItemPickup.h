@@ -27,6 +27,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Gameplay")
 	float RespawnTime;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Gameplay")
+	float CostCredits;
+
 	FTimerHandle TimerHandle_RespawnTimer;
 	
 	void ShowPickup();

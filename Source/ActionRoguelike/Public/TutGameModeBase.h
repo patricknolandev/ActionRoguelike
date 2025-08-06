@@ -11,6 +11,7 @@
  * 
  */
 
+class ATutItemPickup;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
@@ -23,10 +24,16 @@ class ACTIONROGUELIKE_API ATutGameModeBase : public AGameModeBase
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	TSubclassOf<AActor> MinionClass;	
+	TSubclassOf<AActor> MinionClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
+	TArray<TSubclassOf<ATutItemPickup>> PickupClasses;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UEnvQuery* SpawnBotQuery;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
+	UEnvQuery* SpawnPickupQuery;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* DifficultyCurve;
@@ -39,6 +46,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
 	float KillCreditsAmount;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
+	float SpawnPickupMax;
+
 	void OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
 	UFUNCTION()
@@ -46,13 +56,18 @@ protected:
 
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
+
+	void OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result, int32 NumToSpawn);
+
+	UFUNCTION()
+	void SpawnRandomPickup();
 	
 public:
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 	
 	ATutGameModeBase();
-	
+
 	virtual void StartPlay() override;
 
 	UFUNCTION(Exec)
