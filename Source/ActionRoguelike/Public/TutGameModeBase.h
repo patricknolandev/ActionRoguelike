@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SpawnTimerInterval;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
+	float KillCreditsAmount;
+
 	void OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
 	UFUNCTION()

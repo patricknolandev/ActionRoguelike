@@ -8,6 +8,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "TutAttributeComponent.h"
+#include "TutPlayerState.h"
 #include "TutWorldUserWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
@@ -24,6 +25,8 @@ ATutAICharacter::ATutAICharacter()
 	GetMesh()->SetGenerateOverlapEvents(true); // necessary for projectiles to add impulses to ragdoll enemies
 	
 	TimeToHitParamName = "TimeToHit";
+
+	KillCredits = 5.0f;
 }
 
 
@@ -75,6 +78,12 @@ void ATutAICharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeComp
 		
 		if (NewHealth <= 0.0f) // If AI just died
 		{
+			// give kill reward
+			ATutPlayerState* PS = Cast<ATutPlayerState>(InstigatorActor->GetInstigatorController()->PlayerState);
+			if (PS)
+			{
+				PS->ApplyCreditChange(InstigatorActor, KillCredits);
+			}
 			// stop BT
 			AAIController* AIC = Cast<AAIController>(GetController());
 			if (AIC)

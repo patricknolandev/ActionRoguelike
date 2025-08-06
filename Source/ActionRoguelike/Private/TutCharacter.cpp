@@ -23,7 +23,7 @@ ATutCharacter::ATutCharacter()
 	// Attach a camera component to the spring arm so its controlled by it
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
-
+	
 	InteractionComp = CreateDefaultSubobject<UTutInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");

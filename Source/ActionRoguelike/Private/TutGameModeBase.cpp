@@ -16,6 +16,8 @@ static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("tut.SpawnBots"), true, TEX
 ATutGameModeBase::ATutGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
+	KillCreditsAmount = 20.0f;
+	PlayerStateClass = ATutPlayerState::StaticClass();
 }
 
 void ATutGameModeBase::StartPlay()
@@ -114,8 +116,6 @@ void ATutGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		float RespawnDelay = 2.0f; // @fixme: expose this
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
 }
 
 void ATutGameModeBase::RespawnPlayerElapsed(AController* Controller)

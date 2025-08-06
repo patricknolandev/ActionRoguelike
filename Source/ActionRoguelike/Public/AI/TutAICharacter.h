@@ -22,6 +22,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
+	float KillCredits;
+	
 	UTutWorldUserWidget* ActiveHealthBar;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
