@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TutCharacter.h"
+
+#include "TutActionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -27,6 +29,8 @@ ATutCharacter::ATutCharacter()
 	InteractionComp = CreateDefaultSubobject<UTutInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
+
+	ActionComp = CreateDefaultSubobject<UTutActionComponent>("ActionComp");
 	
 	// Get the character to rotate towards the direction of acceleration
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -67,6 +71,9 @@ void ATutCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Mobility", IE_Pressed, this, &ATutCharacter::MobilityDash);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATutCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ATutCharacter::PrimaryInteract);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATutCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATutCharacter::SprintStop);
 }
 
 void ATutCharacter::HealSelf(float Amount /* = 100 */)
@@ -101,6 +108,16 @@ void ATutCharacter::MoveRight(float Value) // Player should move left and right 
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 	// Move right & left based on controller Y rotation
 	AddMovementInput(RightVector, Value);
+}
+
+void ATutCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ATutCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
 }
 
 void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)

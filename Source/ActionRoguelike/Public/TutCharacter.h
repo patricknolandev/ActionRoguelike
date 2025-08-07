@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "TutCharacter.generated.h"
 
+class UTutActionComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UTutInteractionComponent;
@@ -61,11 +62,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UTutAttributeComponent* AttributeComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UTutActionComponent* ActionComp;
+
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 	FName TimeToHitParamName;
 	
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+	void SprintStart();
+	void SprintStop();
 
 	void SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn);
 	
