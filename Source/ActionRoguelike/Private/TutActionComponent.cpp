@@ -13,6 +13,11 @@ UTutActionComponent::UTutActionComponent()
 void UTutActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (TSubclassOf<UTutAction> ActionClass : DefaultActions)
+	{
+		AddAction(ActionClass);
+	}
 }
 
 void UTutActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

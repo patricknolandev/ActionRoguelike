@@ -23,32 +23,6 @@ class ACTIONROGUELIKE_API ATutCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Effects")
-	FName HandSocketName;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* CastingEffect;
-	
-	UPROPERTY(EditAnywhere, Category = "Targeting")
-	float SweepRadius;
-
-	UPROPERTY(EditAnywhere, Category = "Targeting")
-	float SweepDistanceFallback;
-	
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ATutProjectile> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ATutProjectile> AbilityClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ATutProjectile> MobilityClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim;
-
-	FTimerHandle TimerHandle_PrimaryAttack;
 	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
@@ -73,18 +47,10 @@ protected:
 
 	void SprintStart();
 	void SprintStop();
-
-	void SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn);
 	
 	void PrimaryAttack();
-	void StartAttackEffects();
-	void PrimaryAttack_TimeElapsed();
-
 	void AbilityBlackhole();
-	void AbilityBlackhole_TimeElapsed();
-
 	void MobilityDash();
-	void MobilityDash_TimeElapsed();
 	
 	virtual void Jump() override;
 	void PrimaryInteract();

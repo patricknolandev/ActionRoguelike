@@ -36,9 +36,7 @@ ATutCharacter::ATutCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	// Disable the character rotating towards the yaw of the player controller 
 	bUseControllerRotationYaw = false;
-
-	HandSocketName = "Muzzle_01";
-
+	
 	TimeToHitParamName = "TimeToHit";
 }
 
@@ -120,93 +118,21 @@ void ATutCharacter::SprintStop()
 	ActionComp->StopActionByName(this, "Sprint");
 }
 
-void ATutCharacter::SpawnProjectile(TSubclassOf<ATutProjectile> ClassToSpawn)
-{
-	if (ensure(ClassToSpawn))
-	{
-		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
-
-		SweepRadius = 20.0f;
-		SweepDistanceFallback = 5000;
-		
-		// Always shoot even when clipping with objects on spawn
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = GetInstigator();
-
-		FCollisionShape Shape;
-		Shape.SetSphere(SweepRadius);
-		
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(this); // ignore the player character in trace
-		
-		FCollisionObjectQueryParams ObjectParams;
-		ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FVector TraceDirection = GetInstigator()->GetControlRotation().Vector();
-		FVector TraceStart = GetInstigator()->GetPawnViewLocation() + (TraceDirection * SweepRadius);
-		// Target a point far in the distance as fallback
-		FVector TraceEnd = TraceStart + (TraceDirection * SweepDistanceFallback);
-
-		// If we can get a target with a sphere sweep, target the valid object instead
-		FHitResult Hit;
-		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjectParams, Shape, CollisionParams))
-		{
-			TraceEnd = Hit.ImpactPoint;
-		}
-		
-		FRotator ProjectileRotation = (TraceEnd - HandLocation).Rotation();
-		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
-		
-		// Shoot projectile at target
-		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
-	}
-}
-
 // Shoot magic projectile from hand
 void ATutCharacter::PrimaryAttack()
 {
-	StartAttackEffects();
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
-void ATutCharacter::StartAttackEffects()
-{
-	PlayAnimMontage(AttackAnim);
-	
-	UGameplayStatics::SpawnEmitterAttached(CastingEffect, GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-}
-
-void ATutCharacter::PrimaryAttack_TimeElapsed()
-{
-	SpawnProjectile(ProjectileClass);
-}
 
 void ATutCharacter::AbilityBlackhole()
 {
-	PlayAnimMontage(AttackAnim);
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::AbilityBlackhole_TimeElapsed, 0.2f);
-}
-
-void ATutCharacter::AbilityBlackhole_TimeElapsed()
-{
-	SpawnProjectile(AbilityClass);
+	ActionComp->StartActionByName(this, "Blackhole");
 }
 
 void ATutCharacter::MobilityDash()
 {
-	PlayAnimMontage(AttackAnim);
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ATutCharacter::MobilityDash_TimeElapsed, 0.2f);
-}
-
-void ATutCharacter::MobilityDash_TimeElapsed()
-{
-	SpawnProjectile(MobilityClass);
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 void ATutCharacter::Jump()
