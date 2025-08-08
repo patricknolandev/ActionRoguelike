@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "TutAICharacter.generated.h"
 
+class UTutActionComponent;
 class UPawnSensingComponent;
 class UTutAttributeComponent;
 class UUserWidget;
@@ -45,6 +46,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UTutAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UTutActionComponent* ActionComp;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);

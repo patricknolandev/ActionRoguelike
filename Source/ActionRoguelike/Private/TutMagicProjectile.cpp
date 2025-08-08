@@ -2,7 +2,8 @@
 
 
 #include "TutMagicProjectile.h"
-#include "TutAttributeComponent.h"
+
+#include "TutActionComponent.h"
 #include "TutGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -31,6 +32,16 @@ void ATutMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Ove
 {
 	 if (OtherActor && OtherActor != GetInstigator())
 	 {
+
+	 	UTutActionComponent* ActionComp = OtherActor->FindComponentByClass<UTutActionComponent>();
+	 	if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+	 	{
+	 		MovementComp->Velocity = -MovementComp->Velocity;
+
+	 		SetInstigator(Cast<APawn>(OtherActor));
+	 		return;
+	 	}
+	 	
 		 if (UTutGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		 {
 		 	Super::Explode();

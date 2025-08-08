@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
+#include "TutActionComponent.h"
 #include "TutAttributeComponent.h"
 #include "TutPlayerState.h"
 #include "TutWorldUserWidget.h"
@@ -18,7 +19,8 @@ ATutAICharacter::ATutAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
-
+	ActionComp = CreateDefaultSubobject<UTutActionComponent>("ActionComp");
+	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // Make sure the AI always uses the controller so it will run behavior
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);

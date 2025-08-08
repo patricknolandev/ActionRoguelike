@@ -30,7 +30,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
-
+	
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Actions")
