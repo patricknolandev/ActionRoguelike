@@ -23,8 +23,11 @@ public:
 	UTutActionComponent();
 	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-	void AddAction(TSubclassOf<UTutAction> ActionClass);
+	void AddAction(AActor* Instigator, TSubclassOf<UTutAction> ActionClass);
 
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void RemoveAction(UTutAction* ActionToRemove);
+	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StartActionByName(AActor* Instigator, FName ActionName);
 

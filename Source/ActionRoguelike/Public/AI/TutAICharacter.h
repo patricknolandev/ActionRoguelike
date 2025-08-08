@@ -22,9 +22,6 @@ public:
 	ATutAICharacter();
 
 protected:
-
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
-	float KillCredits;
 	
 	UTutWorldUserWidget* ActiveHealthBar;
 	

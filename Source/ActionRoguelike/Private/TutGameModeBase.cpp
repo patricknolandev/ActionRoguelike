@@ -19,8 +19,9 @@ static TAutoConsoleVariable<bool> CVarDebugDrawPickupSpawn(TEXT("tut.DebugDrawPi
 ATutGameModeBase::ATutGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
-	KillCreditsAmount = 20.0f;
-	SpawnPickupMax = 10.f;
+	KillCreditsAmount = 20;
+	SpawnPickupMax = 10;
+	RequiredPickupDistance = 300.0f;
 	PlayerStateClass = ATutPlayerState::StaticClass();
 }
 
@@ -29,7 +30,11 @@ void ATutGameModeBase::StartPlay()
 	Super::StartPlay(); //necessary for beginplay() to be triggered on all objects in world
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ATutGameModeBase::SpawnBotsTimerElapsed, SpawnTimerInterval, true);
-	SpawnRandomPickup();
+	if (ensure(PickupClasses.Num() > 0))
+	{
+		FEnvQueryRequest Request(SpawnPickupQuery, this);
+		Request.Execute(EEnvQueryRunMode::RandomBest5Pct, this, &ATutGameModeBase::OnPickupSpawnQueryCompleted);
+	}
 }
 
 void ATutGameModeBase::KillAll() // @fixme: do over multiple frames to avoid perf spike
@@ -125,6 +130,16 @@ void ATutGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		float RespawnDelay = 2.0f; // @fixme: expose this
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
 	}
+
+	APawn* KillerPawn = Cast<APawn>(Killer);
+	if (KillerPawn)
+	{
+		ATutPlayerState* PS = KillerPawn->GetPlayerState<ATutPlayerState>();
+		if (PS)
+		{
+			PS->AddCredits(KillCreditsAmount);
+		}
+	}
 }
 
 void ATutGameModeBase::RespawnPlayerElapsed(AController* Controller)
@@ -137,33 +152,7 @@ void ATutGameModeBase::RespawnPlayerElapsed(AController* Controller)
 	}
 }
 
-
-
-void ATutGameModeBase::SpawnRandomPickup()
-{
-	// Count the number of spawned pickups and check against max spawned pickups
-	int32 NumOfSpawnedPickups = 0;
-	for (ATutItemPickup* Pickup : TActorRange<ATutItemPickup>(GetWorld()))
-	{
-		NumOfSpawnedPickups++;
-	}
-
-	int32 RemainingSpawnsAllowed = SpawnPickupMax - NumOfSpawnedPickups;
-	
-	UE_LOG(LogTemp, Log, TEXT("Found %i spawned Pickups. Can spawn %i more."), NumOfSpawnedPickups, RemainingSpawnsAllowed);
-
-	// Don't spawn pickups if we equal or exceed the allowed max
-	if (RemainingSpawnsAllowed <= 0)
-	{
-		UE_LOG(LogTemp, Log, TEXT("At maximum pickup capacity. Skipping pickup spawn."));
-		return;
-	}
-	FEnvQueryRequest Request(SpawnPickupQuery, this);
-	Request.Execute(EEnvQueryRunMode::RandomBest5Pct, FQueryFinishedSignature::CreateUObject(this, &ATutGameModeBase::OnPickupSpawnQueryCompleted, RemainingSpawnsAllowed));
-	
-}
-
-void ATutGameModeBase::OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result, int32 NumToSpawn)
+void ATutGameModeBase::OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
 {
 	FEnvQueryResult* QueryResult = Result.Get();
 	bool bDebugDraw = CVarDebugDrawPickupSpawn.GetValueOnGameThread();
@@ -173,29 +162,52 @@ void ATutGameModeBase::OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 		UE_LOG(LogTemp, Warning, TEXT("Spawn pickup EQS Query failed!"));
 		return;
 	}
-
+	
 	// Spawn pickups
 	TArray<FVector> Locations;
 	QueryResult->GetAllAsLocations(Locations);
-	
-	if (Locations.Num() > 0 && PickupClasses.Num() > 0)
+
+	// For checking distance between points
+	TArray<FVector> UsedLocations;
+
+	int32 SpawnCounter = 0;
+	while (SpawnCounter < SpawnPickupMax && Locations.Num() > 0)
 	{
-		for (int32 i = 0; i < NumToSpawn && i < Locations.Num(); i++)
+		int32 RandomLocationIndex = FMath::RandRange(0, Locations.Num() - 1);
+		FVector PickedLocation = Locations[RandomLocationIndex];
+		// Remove the location so we don't pick the same spawn location again
+		Locations.RemoveAt(RandomLocationIndex);
+
+		bool bValidLocation = true;
+		for (FVector OtherLocation : UsedLocations)
 		{
-			int32 RandomPickupIndex = FMath::RandRange(0, PickupClasses.Num() - 1);
-			TSubclassOf<ATutItemPickup> RandomClass = PickupClasses[RandomPickupIndex];
-			int32 RandomLocationIndex = FMath::RandRange(0, Locations.Num() - 1);
+			float DistanceTo = (PickedLocation - OtherLocation).Size();
 
-			if (RandomClass)
+			if (DistanceTo < RequiredPickupDistance)
 			{
-				GetWorld()->SpawnActor<AActor>(RandomClass, Locations[RandomLocationIndex], FRotator::ZeroRotator);
-				if (bDebugDraw)
-				{
-					DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Purple, false, 60.0f);
-				}
-
-				Locations.RemoveAt(RandomLocationIndex); // remove the location so we don't spawn the same pickup at the same location
+				bValidLocation = false;
+				break;
 			}
 		}
+
+		// Failed the distance check
+		if (!bValidLocation)
+		{
+			continue;
+		}
+
+		// Pick a random powerup
+		int32 RandomPickupIndex = FMath::RandRange(0, PickupClasses.Num() - 1);
+		TSubclassOf<ATutItemPickup> RandomPowerupClass = PickupClasses[RandomPickupIndex];
+		
+		GetWorld()->SpawnActor<AActor>(RandomPowerupClass, PickedLocation, FRotator::ZeroRotator);
+
+		if (bDebugDraw)
+		{
+			DrawDebugSphere(GetWorld(), PickedLocation, 50.0f, 10, FColor::Purple, false, 60.0f);
+		}
+		
+		UsedLocations.Add(PickedLocation);
+		SpawnCounter++;
 	}
 }

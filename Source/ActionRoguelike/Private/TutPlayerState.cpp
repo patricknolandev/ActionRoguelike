@@ -5,8 +5,8 @@
 
 ATutPlayerState::ATutPlayerState()
 {
-	Credits = 0.0f;
-	CreditsMax = 1000000.0f;
+	Credits = 0;
+	CreditsMax = 1000000;
 }
 
 
@@ -28,22 +28,40 @@ ATutPlayerState* ATutPlayerState::GetPlayerState(AActor* FromActor)
 	return nullptr;
 }
 
-bool ATutPlayerState::ApplyCreditChange(AActor* InstigatorActor, float Delta)
+void ATutPlayerState::AddCredits(int32 Delta)
 {
+	if (!ensure(Delta > 0))
+	{
+		return;
+	}
 
-	float OldCredits = Credits;
+	Credits += Delta;
 
-	Credits = FMath::Clamp(Credits + Delta, 0.0f, CreditsMax);
-
-	float ActualDelta = Credits - OldCredits;
-	OnCreditsChanged.Broadcast(InstigatorActor, this, Credits, ActualDelta);
-	
-	return ActualDelta != 0.0f;
+	OnCreditsChanged.Broadcast(this, Credits, Delta);
 }
 
-bool ATutPlayerState::HasEnoughCredits(float Delta) const
+bool ATutPlayerState::RemoveCredits(int32 Delta)
 {
-	return Credits >= Delta;
+	if (!ensure(Delta > 0))
+	{
+		return false;
+	}
+
+	if (Credits < Delta)
+	{
+		return false;
+	}
+
+	Credits -= Delta;
+
+	OnCreditsChanged.Broadcast(this, Credits, -Delta);
+
+	return true;
+}
+
+int32 ATutPlayerState::GetCredits() const
+{
+	return Credits;
 }
 
 bool ATutPlayerState::IsAtFullCredits() const

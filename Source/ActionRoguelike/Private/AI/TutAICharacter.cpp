@@ -28,7 +28,6 @@ ATutAICharacter::ATutAICharacter()
 	
 	TimeToHitParamName = "TimeToHit";
 
-	KillCredits = 5.0f;
 }
 
 
@@ -80,12 +79,6 @@ void ATutAICharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeComp
 		
 		if (NewHealth <= 0.0f) // If AI just died
 		{
-			// give kill reward
-			ATutPlayerState* PS = Cast<ATutPlayerState>(InstigatorActor->GetInstigatorController()->PlayerState);
-			if (PS)
-			{
-				PS->ApplyCreditChange(InstigatorActor, KillCredits);
-			}
 			// stop BT
 			AAIController* AIC = Cast<AAIController>(GetController());
 			if (AIC)

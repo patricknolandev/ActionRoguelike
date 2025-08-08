@@ -2,11 +2,11 @@
 
 
 #include "TutMagicProjectile.h"
-
 #include "TutActionComponent.h"
 #include "TutGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "TutActionEffect.h"
 
 
 
@@ -41,10 +41,17 @@ void ATutMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Ove
 	 		SetInstigator(Cast<APawn>(OtherActor));
 	 		return;
 	 	}
-	 	
-		 if (UTutGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
-		 {
-		 	Super::Explode();
-		 }
+
+	 	// Apply damage & impulse
+	 	if (UTutGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+	 	{
+	 		Explode();
+
+	 		if (ActionComp)
+	 		{
+	 			ActionComp->AddAction(GetInstigator(), BurningActionClass);
+	 		}
+	 		
+	 	}
 	 }
 }

@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "TutPlayerState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnCreditsChanged, AActor*, InstigatorActor, ATutPlayerState*, OwningPlayerState, float, NewCredits, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AActor*, InstigatorActor, int32, NewCredits, int32, Delta);
 
 /**
  * 
@@ -23,20 +23,26 @@ public:
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Category="Attributes")
-	float Credits;
+	int32 Credits;
 
 	UPROPERTY(BlueprintReadOnly, Category="Attributes")
-	float CreditsMax;
+	int32 CreditsMax;
 
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	static ATutPlayerState* GetPlayerState(AActor* FromActor);
-	
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	bool ApplyCreditChange(AActor* InstigatorActor, float Delta);
 
-	bool HasEnoughCredits(float Delta) const;
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	void AddCredits(int32 Delta);
+
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	bool RemoveCredits(int32 Delta);
+	
+
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	int32 GetCredits() const;
+
 	bool IsAtFullCredits() const;
 
 	UPROPERTY(BlueprintAssignable)

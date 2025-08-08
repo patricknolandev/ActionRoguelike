@@ -13,7 +13,7 @@ ATutPickupHealthPotion::ATutPickupHealthPotion()
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HealAmount = 100.0f;
-	CostCredits = 5.0f;
+	CostCredits = 5;
 }
 
 void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
@@ -27,11 +27,10 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		if (ensure(AttributeComp && !AttributeComp->IsAtFullHealth()))
 		{
-			ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn);
-			if (ensure(PS && PS->HasEnoughCredits(CostCredits)))
+			if (ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn))
 			{
 				// Only activate on successful heal and credit deduction
-				if (AttributeComp->ApplyHealthChange(this, HealAmount) && PS->ApplyCreditChange(this, -CostCredits))
+				if (PS->RemoveCredits(CostCredits) && AttributeComp->ApplyHealthChange(this, HealAmount))
 				{
 					HideAndCooldownPickup();
 				}

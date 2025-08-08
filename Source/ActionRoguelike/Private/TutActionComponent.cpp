@@ -16,7 +16,7 @@ void UTutActionComponent::BeginPlay()
 
 	for (TSubclassOf<UTutAction> ActionClass : DefaultActions)
 	{
-		AddAction(ActionClass);
+		AddAction(GetOwner(), ActionClass);
 	}
 }
 
@@ -28,7 +28,7 @@ void UTutActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 }
 
-void UTutActionComponent::AddAction(TSubclassOf<UTutAction> ActionClass)
+void UTutActionComponent::AddAction(AActor* Instigator, TSubclassOf<UTutAction> ActionClass)
 {
 	if (!ensure(ActionClass))
 	{
@@ -39,7 +39,23 @@ void UTutActionComponent::AddAction(TSubclassOf<UTutAction> ActionClass)
 	if (ensure(NewAction))
 	{
 		Actions.Add(NewAction);
+
+		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator)))
+		{
+			NewAction->StartAction(Instigator);
+		}
 	}
+}
+
+void UTutActionComponent::RemoveAction(UTutAction* ActionToRemove)
+{
+	if (!ensure(ActionToRemove && !ActionToRemove->IsRunning()))
+	{
+		return;
+	}
+	
+	Actions.Remove(ActionToRemove);
+	
 }
 
 bool UTutActionComponent::StartActionByName(AActor* Instigator, FName ActionName)

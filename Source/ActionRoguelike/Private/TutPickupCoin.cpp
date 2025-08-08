@@ -10,7 +10,7 @@ ATutPickupCoin::ATutPickupCoin()
 	MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	CreditAmount = 5.0f;
+	CreditAmount = 5;
 }
 
 void ATutPickupCoin::Interact_Implementation(APawn* InstigatorPawn)
@@ -19,12 +19,9 @@ void ATutPickupCoin::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		return;
 	}
-	ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn);
-	if (ensure(PS) && !PS->IsAtFullCredits())
+	if (ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn))
 	{
-		if (PS->ApplyCreditChange(this, CreditAmount))
-		{
-			HideAndCooldownPickup();
-		}
+		PS->AddCredits(CreditAmount);
+		HideAndCooldownPickup();
 	}
 }

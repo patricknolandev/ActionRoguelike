@@ -44,10 +44,13 @@ protected:
 	float SpawnTimerInterval;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
-	float KillCreditsAmount;
+	float RequiredPickupDistance;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
-	float SpawnPickupMax;
+	int32 KillCreditsAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
+	int32 SpawnPickupMax;
 
 	void OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
@@ -57,10 +60,7 @@ protected:
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
 
-	void OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result, int32 NumToSpawn);
-
-	UFUNCTION()
-	void SpawnRandomPickup();
+	void OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 	
 public:
 
