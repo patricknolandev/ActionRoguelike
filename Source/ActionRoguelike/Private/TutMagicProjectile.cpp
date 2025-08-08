@@ -29,7 +29,6 @@ ATutMagicProjectile::ATutMagicProjectile()
 void ATutMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnActorOverlap Called"));
 	 if (OtherActor && OtherActor != GetInstigator())
 	 {
 		 if (UTutGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
