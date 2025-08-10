@@ -4,17 +4,18 @@
 #include "TutInteractionComponent.h"
 #include "TutGameplayInterface.h"
 #include "DrawDebugHelpers.h"
+#include "Blueprint/UserWidget.h"
+#include "TutWorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("tut.InteractionDebugDraw"), false, TEXT("Enable debug lines for interaction component."), ECVF_Cheat);
 
-// Sets default values for this component's properties
 UTutInteractionComponent::UTutInteractionComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	TraceRadius = 30.0f;
+	TraceDistance = 500.0f;
+	CollisionChannel = ECC_WorldDynamic;
 }
 
 
@@ -33,11 +34,12 @@ void UTutInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	FindBestInteractible();
 	// ...
 }
 
-	// Get first object close to character eyesight in an area
-void UTutInteractionComponent::PrimaryInteract()
+// Get first object close to character eyesight in an area
+void UTutInteractionComponent::FindBestInteractible()
 {
 	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
 	
@@ -50,27 +52,28 @@ void UTutInteractionComponent::PrimaryInteract()
 	FRotator EyeRotation;
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
-	FVector End = EyeLocation + (EyeRotation.Vector() * 1000);
+	FVector End = EyeLocation + (EyeRotation.Vector() * TraceDistance);
 	
 	//FHitResult Hit;
 	//bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
 	TArray<FHitResult> Hits;
-
-	float Radius = 30.f;
 	
 	FCollisionShape Shape;
-	Shape.SetSphere(Radius);
+	Shape.SetSphere(TraceRadius);
 	
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
 	
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
+	// Clear ref before trying to fill
+	FocusedActor = nullptr;
+	
 	for (FHitResult Hit : Hits)
 	{
 		if (bDebugDraw)
 		{
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 2.0f);
 		}
 		
 		AActor* HitActor = Hit.GetActor();
@@ -78,15 +81,54 @@ void UTutInteractionComponent::PrimaryInteract()
 		{
 			if (HitActor->Implements<UTutGameplayInterface>())
 			{
-				APawn* MyPawn = Cast<APawn>(MyOwner);
-			
-				ITutGameplayInterface::Execute_Interact(HitActor, MyPawn);
+				FocusedActor = HitActor;
 				break;
 			}
 		}
 	}
+
+	if (FocusedActor)
+	{
+		// Only create an interaction widget if one is assigned and doesn't exist yet
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<UTutWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		// Attach and add it to the viewport
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->AttachedActor = FocusedActor;
+			if (!DefaultWidgetInstance->IsInViewport())
+			{
+				DefaultWidgetInstance->AddToViewport();
+			}
+		}
+	}
+	// Remove widget if we don't have an actor in interaction range
+	else
+	{
+			if (DefaultWidgetInstance)
+			{
+				DefaultWidgetInstance->RemoveFromParent();
+			}
+	}
+	
 	if (bDebugDraw)
 	{
 		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
 	}
+}
+
+void UTutInteractionComponent::PrimaryInteract()
+{
+	if (FocusedActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to interact.");
+		return;
+	}
+	
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+			
+	ITutGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
 }

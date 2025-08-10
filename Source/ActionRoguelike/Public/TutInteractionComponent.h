@@ -7,6 +7,8 @@
 #include "TutInteractionComponent.generated.h"
 
 
+class UTutWorldUserWidget;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API UTutInteractionComponent : public UActorComponent
 {
@@ -21,8 +23,29 @@ public:
 	UTutInteractionComponent();
 
 protected:
+
+	void FindBestInteractible();
+	
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	AActor* FocusedActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	float TraceDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	float TraceRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	TEnumAsByte<ECollisionChannel> CollisionChannel;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UTutWorldUserWidget> DefaultWidgetClass;
+
+	UPROPERTY()
+	UTutWorldUserWidget* DefaultWidgetInstance;
 
 public:	
 	// Called every frame
