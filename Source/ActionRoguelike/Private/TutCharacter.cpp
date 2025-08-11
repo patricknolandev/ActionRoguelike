@@ -2,15 +2,13 @@
 
 #include "TutCharacter.h"
 
-#include "TutActionComponent.h"
+#include "Actions/TutActionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "TutInteractionComponent.h"
 #include "TutAttributeComponent.h"
-#include "TutProjectile.h"
 #include "Components/CapsuleComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATutCharacter::ATutCharacter()
@@ -154,7 +152,13 @@ void ATutCharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeCompon
 	// Taking damage
 	if (NewHealth > 0 && Delta < 0.0f)
 	{
+		// Hit-flash character material
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->GetTimeSeconds());
+		// Give rage based on % of damage
+		if (OwningComp->GetRage() < OwningComp->GetRageMax())
+		{
+			OwningComp->AddRage(InstigatorActor, Delta);
+		}
 	}
 	// Player dies
 	if (NewHealth <= 0 && Delta < 0.0f)

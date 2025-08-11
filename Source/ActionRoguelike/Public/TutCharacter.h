@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TutPlayerState.h"
-#include "TutProjectile.h"
 #include "GameFramework/Character.h"
 #include "TutCharacter.generated.h"
 

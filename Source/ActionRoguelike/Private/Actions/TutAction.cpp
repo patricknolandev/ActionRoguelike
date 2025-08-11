@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TutAction.h"
-#include "TutActionComponent.h"
+#include "Actions/TutAction.h"
+#include "Actions/TutActionComponent.h"
 
 void UTutAction::StartAction_Implementation(AActor* Instigator)
 {

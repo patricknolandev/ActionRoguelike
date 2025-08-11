@@ -8,6 +8,7 @@
 #include "TutAttributeComponent.h"
 #include "TutCharacter.h"
 #include "TutItemPickup.h"
+#include "TutPlayerState.h"
 #include "AI/TutAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"

@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TutAction_ProjectileAttack.h"
+#include "Actions/TutAction_ProjectileAttack.h"
 
+#include "TutAttributeComponent.h"
 #include "TutProjectile.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,11 +15,25 @@ UTutAction_ProjectileAttack::UTutAction_ProjectileAttack()
 	AttackAnimDelay = 0.2f;
 	SweepRadius = 20.0f; // size of sphere + distance to offset start of trace
 	SweepDistanceFallback = 5000;
+	RageCost = 0.0f;
 }
 
 void UTutAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 {
-	Super::StartAction_Implementation(Instigator);
+	// Check whether we have enough rage, if so, deduct rage
+	if (ensure(Instigator))
+	{
+		UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(Instigator);
+		if (AttributeComp)
+		{
+			if (AttributeComp->GetRage() < RageCost)
+			{
+				// Stop action if rage is not enough
+				return;
+			}
+			Super::StartAction_Implementation(Instigator);
+		}
+	}
 
 	ACharacter* Character = Cast<ACharacter>(Instigator);
 	if (Character)
@@ -71,7 +86,15 @@ void UTutAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorChar
 		
 		FRotator ProjectileRotation = (TraceEnd - HandLocation).Rotation();
 		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
-		
+
+		// Deduct rage if the projectile costs rage
+		if (UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(InstigatorCharacter))
+		{
+			if (RageCost > 0.0f)
+			{
+				AttributeComp->RemoveRage(InstigatorCharacter, RageCost);
+			}
+		}
 		// Shoot projectile at target
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 	}

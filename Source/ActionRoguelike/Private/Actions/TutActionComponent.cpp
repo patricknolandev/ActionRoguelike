@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TutActionComponent.h"
-
-#include "TutAction.h"
+#include "Actions/TutActionComponent.h"
+#include "Actions/TutAction.h"
 
 UTutActionComponent::UTutActionComponent()
 {

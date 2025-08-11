@@ -2,8 +2,6 @@
 
 
 #include "TutDashProjectile.h"
-
-#include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"

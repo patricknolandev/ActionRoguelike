@@ -37,6 +37,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
+	UPROPERTY(EditAnywhere, Category = "Attributes")
+	float RageCost;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	UParticleSystem* CastingEffect;
 

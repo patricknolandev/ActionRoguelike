@@ -7,7 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
-#include "TutActionComponent.h"
+#include "Actions/TutActionComponent.h"
 #include "TutAttributeComponent.h"
 #include "TutPlayerState.h"
 #include "TutWorldUserWidget.h"

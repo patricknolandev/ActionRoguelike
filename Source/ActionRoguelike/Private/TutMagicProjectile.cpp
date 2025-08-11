@@ -2,11 +2,11 @@
 
 
 #include "TutMagicProjectile.h"
-#include "TutActionComponent.h"
+#include "Actions/TutActionComponent.h"
 #include "TutGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "TutActionEffect.h"
+#include "Actions/TutActionEffect.h"
 
 
 
@@ -47,9 +47,9 @@ void ATutMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Ove
 	 	{
 	 		Explode();
 
-	 		if (ActionComp)
+	 		if (ActionComp && bApplyEffect && EffectActionClass)
 	 		{
-	 			ActionComp->AddAction(GetInstigator(), BurningActionClass);
+	 			ActionComp->AddAction(GetInstigator(), EffectActionClass);
 	 		}
 	 		
 	 	}
