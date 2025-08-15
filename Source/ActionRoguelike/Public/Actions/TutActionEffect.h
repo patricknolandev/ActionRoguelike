@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TutAction.h"
+#include "TutAttributeComponent.h"
 #include "TutActionEffect.generated.h"
 
 /**
@@ -19,6 +20,7 @@ public:
 	void StartAction_Implementation(AActor* Instigator) override;
 
 	void StopAction_Implementation(AActor* Instigator) override;
+	
 
 	UTutActionEffect();
 

@@ -44,7 +44,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UTutAttributeComponent* AttributeComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UTutActionComponent* ActionComp;
 
 	UFUNCTION()
