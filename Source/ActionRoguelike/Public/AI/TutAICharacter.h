@@ -24,12 +24,20 @@ public:
 protected:
 	
 	UTutWorldUserWidget* ActiveHealthBar;
+
+	UTutWorldUserWidget* PlayerSpottedWidget;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PlayerSpottedWidgetClass;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 	FName TimeToHitParamName;
+
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	AActor* GetTargetActor() const;
 	
 	void SetTargetActor(AActor* NewTarget);
 	

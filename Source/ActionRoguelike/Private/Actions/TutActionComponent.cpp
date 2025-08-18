@@ -91,3 +91,21 @@ bool UTutActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	}
 	return false;
 }
+
+bool UTutActionComponent::HasActions(TSubclassOf<UTutAction> ActionToCheck)
+{
+	UClass* ClassToCheck = ActionToCheck.Get();
+	if (ClassToCheck)
+	{
+		for (UTutAction* Action : Actions)
+		{
+			if (Action->GetClass() == ClassToCheck)
+			{
+				return true;
+			}
+		}
+	}
+
+
+	return false;
+}

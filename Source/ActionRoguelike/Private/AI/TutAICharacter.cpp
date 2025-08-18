@@ -42,7 +42,29 @@ void ATutAICharacter::PostInitializeComponents()
 
 void ATutAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	SetTargetActor(Pawn);
+	if (GetTargetActor() != Pawn)
+	{
+		SetTargetActor(Pawn);
+		if (PlayerSpottedWidget == nullptr)
+		{
+			PlayerSpottedWidget = CreateWidget<UTutWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
+			if (PlayerSpottedWidget)
+			{
+				PlayerSpottedWidget->AttachedActor = this;
+				PlayerSpottedWidget->AddToViewport();
+			}
+		}
+	}
+}
+
+AActor* ATutAICharacter::GetTargetActor() const
+{
+	AAIController* AIC = Cast<AAIController>(GetController());
+	if (AIC)
+	{
+		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
+	}
+	return nullptr;
 }
 
 void ATutAICharacter::SetTargetActor(AActor* NewTarget)

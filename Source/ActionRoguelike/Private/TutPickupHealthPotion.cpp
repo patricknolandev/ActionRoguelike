@@ -23,9 +23,9 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		return;
 	}
 	UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(InstigatorPawn);
-	if (AttributeComp)
+	if (ensure(AttributeComp))
 	{
-		if (ensure(AttributeComp && !AttributeComp->IsAtFullHealth()))
+		if (!AttributeComp->IsAtFullHealth())
 		{
 			if (ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn))
 			{

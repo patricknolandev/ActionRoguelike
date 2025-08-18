@@ -3,7 +3,6 @@
 
 #include "Actions/TutActionEffect_Thorns.h"
 #include "TutAttributeComponent.h"
-#include "TutCharacter.h"
 #include "TutGameplayFunctionLibrary.h"
 #include "Actions/TutActionComponent.h"
 

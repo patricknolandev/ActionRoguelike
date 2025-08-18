@@ -20,7 +20,7 @@ UTutAction_ProjectileAttack::UTutAction_ProjectileAttack()
 
 void UTutAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 {
-	// Check whether we have enough rage, if so, deduct rage
+	// Check whether we have enough rage, if not, cancel action
 	if (ensure(Instigator))
 	{
 		UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(Instigator);
