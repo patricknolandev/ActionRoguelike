@@ -42,6 +42,7 @@ void ATutAICharacter::PostInitializeComponents()
 
 void ATutAICharacter::OnPawnSeen(APawn* Pawn)
 {
+	// Only trigger on new targets
 	if (GetTargetActor() != Pawn)
 	{
 		SetTargetActor(Pawn);
@@ -51,7 +52,8 @@ void ATutAICharacter::OnPawnSeen(APawn* Pawn)
 			if (PlayerSpottedWidget)
 			{
 				PlayerSpottedWidget->AttachedActor = this;
-				PlayerSpottedWidget->AddToViewport();
+				// Place on top of other widget layers as prio
+				PlayerSpottedWidget->AddToViewport(10);
 			}
 		}
 	}

@@ -17,8 +17,17 @@ void ATutPickupAbility::Interact_Implementation(APawn* InstigatorPawn)
 	if (ensure(InstigatorPawn) && Ability != nullptr)
 	{
 		UTutActionComponent* ActionComp = InstigatorPawn->FindComponentByClass<UTutActionComponent>();
-		if (ensure(ActionComp) && !ActionComp->HasActions(Ability))
+		// Check if player already has Ability
+		if (ActionComp)
 		{
+			if (ActionComp->HasActions(Ability))
+			{
+				FString DebugMsg = FString::Printf(TEXT("Action '%s' already known by %s."), *GetNameSafe(Ability), *GetNameSafe(InstigatorPawn));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+				return;
+			}
+
+			// Give new Ability to player
 			ActionComp->AddAction(InstigatorPawn, Ability);
 			HideAndCooldownPickup();
 		}
