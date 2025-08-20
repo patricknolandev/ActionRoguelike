@@ -42,7 +42,7 @@ void ATutCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AttributeComp->OnHealthChanged.AddDynamic(this, &ATutCharacter::OnHealthChanged);
+	AttributeComp->OnAttributeChanged.AddDynamic(this, &ATutCharacter::OnHealthChanged);
 }
 
 FVector ATutCharacter::GetPawnViewLocation() const

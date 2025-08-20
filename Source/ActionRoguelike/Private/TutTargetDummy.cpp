@@ -13,7 +13,7 @@ ATutTargetDummy::ATutTargetDummy()
 
 	AttributeComp = CreateDefaultSubobject<UTutAttributeComponent>("AttributeComp");
 	// Trigger when health is changed (damage/healing)
-	AttributeComp->OnHealthChanged.AddDynamic(this, &ATutTargetDummy::OnHealthChanged);
+	AttributeComp->OnAttributeChanged.AddDynamic(this, &ATutTargetDummy::OnHealthChanged);
 	
 }
 

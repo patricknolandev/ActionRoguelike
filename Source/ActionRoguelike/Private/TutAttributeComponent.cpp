@@ -39,7 +39,7 @@ bool UTutAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float De
 	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
 	float ActualDelta = Health - OldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	OnAttributeChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
 	// Died
 	if (ActualDelta < 0.0f && Health == 0.0f)
@@ -74,7 +74,7 @@ void UTutAttributeComponent::AddRage(AActor* InstigatorActor, float Delta)
 
 	const float ActualDelta = Rage - OldRage;
 	
-	OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+	OnAttributeChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Rage: %f"), Rage));
 	
 }
@@ -95,7 +95,7 @@ bool UTutAttributeComponent::RemoveRage(AActor* InstigatorActor, float Delta)
 	
 	Rage -= Delta;
 
-	OnRageChanged.Broadcast(InstigatorActor, this, Rage, -Delta);
+	OnAttributeChanged.Broadcast(InstigatorActor, this, Rage, -Delta);
 
 	return true;
 }

@@ -36,7 +36,7 @@ void ATutAICharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ATutAICharacter::OnPawnSeen);
-	AttributeComp->OnHealthChanged.AddDynamic(this, &ATutAICharacter::OnHealthChanged);
+	AttributeComp->OnAttributeChanged.AddDynamic(this, &ATutAICharacter::OnHealthChanged);
 
 }
 

@@ -21,7 +21,7 @@ void UTutActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 
 	if (AttributeComp)
 	{
-		AttributeComp->OnHealthChanged.AddDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
+		AttributeComp->OnAttributeChanged.AddDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
 	}
 
 }
@@ -34,7 +34,7 @@ void UTutActionEffect_Thorns::StopAction_Implementation(AActor* Instigator)
 
 	if (AttributeComp)
 	{
-		AttributeComp->OnHealthChanged.RemoveDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
+		AttributeComp->OnAttributeChanged.RemoveDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
 	}
 }
 
