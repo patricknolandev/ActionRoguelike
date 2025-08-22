@@ -34,7 +34,13 @@ void UTutInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractible();
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+
+	if (MyPawn->IsLocallyControlled())
+	{
+		FindBestInteractible();
+	}
+	
 	// ...
 }
 
@@ -73,7 +79,7 @@ void UTutInteractionComponent::FindBestInteractible()
 	{
 		if (bDebugDraw)
 		{
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 2.0f);
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 0.0f);
 		}
 		
 		AActor* HitActor = Hit.GetActor();
@@ -116,13 +122,18 @@ void UTutInteractionComponent::FindBestInteractible()
 	
 	if (bDebugDraw)
 	{
-		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 0.0f, 0, 2.0f);
 	}
 }
 
 void UTutInteractionComponent::PrimaryInteract()
 {
-	if (FocusedActor == nullptr)
+	ServerInteract(FocusedActor);
+}
+
+void UTutInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if (InFocus == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to interact.");
 		return;
@@ -130,5 +141,5 @@ void UTutInteractionComponent::PrimaryInteract()
 	
 	APawn* MyPawn = Cast<APawn>(GetOwner());
 			
-	ITutGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+	ITutGameplayInterface::Execute_Interact(InFocus, MyPawn);
 }
