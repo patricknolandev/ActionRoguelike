@@ -27,7 +27,7 @@ ATutItemChest::ATutItemChest()
 void ATutItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	bLidOpened = !bLidOpened;
-	// Open lid visually on server manually
+	// Open lid visually on server manually as RPC's are on clients only in C++, blueprints is client + server
 	OnRep_LidOpened();
 }
 

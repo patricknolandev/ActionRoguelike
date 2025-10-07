@@ -19,29 +19,23 @@ UTutInteractionComponent::UTutInteractionComponent()
 }
 
 
-// Called when the game starts
 void UTutInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
-// Called every frame
+// Called every frame - on client and server
 void UTutInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// Client run to limit calls and guarantee correct interact position for server auth
 	APawn* MyPawn = Cast<APawn>(GetOwner());
-
 	if (MyPawn->IsLocallyControlled())
 	{
 		FindBestInteractible();
 	}
-	
-	// ...
 }
 
 // Get first object close to character eyesight in an area
@@ -59,9 +53,6 @@ void UTutInteractionComponent::FindBestInteractible()
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 	FVector End = EyeLocation + (EyeRotation.Vector() * TraceDistance);
-	
-	//FHitResult Hit;
-	//bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
 	TArray<FHitResult> Hits;
 	

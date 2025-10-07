@@ -3,6 +3,7 @@
 
 #include "TutAttributeComponent.h"
 #include "TutGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("tut.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat);
 
@@ -14,6 +15,10 @@ UTutAttributeComponent::UTutAttributeComponent()
 	Rage = 0;
 	RageMax = 100;
 	RageGrantedDmgPercent = 0.25f;
+
+	// SetIsReplicated(true); used for actors outside constructor, ex. setting replication at runtime
+	// bReplicates = true; used for actors, not actor components
+	SetIsReplicatedByDefault(true); // used for components, "default" is used within constructor
 }
 
 bool UTutAttributeComponent::Kill(AActor* InstigatorActor)
@@ -39,7 +44,11 @@ bool UTutAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float De
 	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
 	float ActualDelta = Health - OldHealth;
-	OnAttributeChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	if (ActualDelta != 0.0f)
+	{
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+	}
 
 	// Died
 	if (ActualDelta < 0.0f && Health == 0.0f)
@@ -74,7 +83,11 @@ void UTutAttributeComponent::AddRage(AActor* InstigatorActor, float Delta)
 
 	const float ActualDelta = Rage - OldRage;
 	
-	OnAttributeChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+	if (ActualDelta != 0.0f)
+	{
+		MulticastRageChanged(InstigatorActor, Rage, ActualDelta);
+	}
+	
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Rage: %f"), Rage));
 	
 }
@@ -95,7 +108,10 @@ bool UTutAttributeComponent::RemoveRage(AActor* InstigatorActor, float Delta)
 	
 	Rage -= Delta;
 
-	OnAttributeChanged.Broadcast(InstigatorActor, this, Rage, -Delta);
+	if (Delta != 0.0f)
+	{
+		MulticastRageChanged(InstigatorActor, Rage, -Delta);
+	}
 
 	return true;
 }
@@ -154,4 +170,25 @@ bool UTutAttributeComponent::IsActorAlive(AActor* Actor)
 	}
 
 	return false;
+}
+
+void UTutAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewValue,
+	float Delta)
+{
+	// Update clients cosmetic tracking of attributes (UI)
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewValue, Delta);
+}
+
+void UTutAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewValue, float Delta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, NewValue, Delta);
+}
+
+void UTutAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UTutAttributeComponent, Health);
+	DOREPLIFETIME(UTutAttributeComponent, HealthMax);
+	//DOREPLIFETIME_CONDITION(UTutAttributeComponent, HealthMax, COND_InitialOnly); // used to optimize for bandwith / cpu
 }

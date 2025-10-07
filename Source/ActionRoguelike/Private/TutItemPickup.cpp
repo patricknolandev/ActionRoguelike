@@ -14,6 +14,8 @@ ATutItemPickup::ATutItemPickup()
 
 	RespawnTime = 10.0f;
 	CostCredits = 0.0f;
+
+	bReplicates = true;
 }
 
 void ATutItemPickup::Interact_Implementation(APawn* InstigatorPawn)

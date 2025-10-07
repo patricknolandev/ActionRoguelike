@@ -15,13 +15,15 @@ UTutActionEffect_Thorns::UTutActionEffect_Thorns()
 
 void UTutActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Thorns StartAction called! Instigator: %s"), *GetNameSafe(Instigator));
+	
 	Super::StartAction_Implementation(Instigator);
 
 	UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(GetOwningComponent()->GetOwner());
 
 	if (AttributeComp)
 	{
-		AttributeComp->OnAttributeChanged.AddDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
+		AttributeComp->OnHealthChanged.AddDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
 	}
 
 }
@@ -34,7 +36,7 @@ void UTutActionEffect_Thorns::StopAction_Implementation(AActor* Instigator)
 
 	if (AttributeComp)
 	{
-		AttributeComp->OnAttributeChanged.RemoveDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
+		AttributeComp->OnHealthChanged.RemoveDynamic(this, &UTutActionEffect_Thorns::OnHealthChanged);
 	}
 }
 

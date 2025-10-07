@@ -26,10 +26,10 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category="Attributes")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Attributes")
 	float HealthMax;
 
 	UPROPERTY(BlueprintReadOnly, Category="Attributes")
@@ -41,13 +41,27 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
 	float RageGrantedDmgPercent;
 
+	// Use repnotify for state changes, ex. isAlive, item chests being open
+	// Use multicast for a transient change, such as the health change event (we still replicate the health value)
+	// IMPORTANT: Reliable netmulticasts do not consider relevancy
+	// Relevancy: Unreal's handling of replication based on the distance to the player
+	
+	UFUNCTION(NetMulticast, Reliable) // TODO fix to be unreliable as input is currently disabled when health is 0 on character
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewValue, float Delta);
+
+	UFUNCTION(NetMulticast, Reliable) // TODO fix to be unreliable as input is currently disabled when health is 0 on character
+	void MulticastRageChanged(AActor* InstigatorActor, float NewValue, float Delta);
+
 public:
 
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* InstigatorActor);
 
 	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChanged OnAttributeChanged;
+	FOnAttributeChanged OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChanged OnRageChanged;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
