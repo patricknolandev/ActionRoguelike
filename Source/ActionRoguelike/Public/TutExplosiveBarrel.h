@@ -25,7 +25,7 @@ protected:
 	UStaticMeshComponent* MeshComp;
 
 	// Explosion force to be applied
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	URadialForceComponent* ForceComp;
 
 	// Called when the game starts or when spawned

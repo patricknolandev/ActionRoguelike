@@ -7,6 +7,8 @@
 UTutActionComponent::UTutActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicatedByDefault(true);
 }
 
 void UTutActionComponent::BeginPlay()
@@ -69,6 +71,13 @@ bool UTutActionComponent::StartActionByName(AActor* Instigator, FName ActionName
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FailedMsg);
 				continue;
 			}
+
+			// Is client?
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStartAction(Instigator, ActionName);
+			}
+			
 			Action->StartAction(Instigator);
 			return true;
 		}
@@ -108,4 +117,9 @@ bool UTutActionComponent::HasActions(TSubclassOf<UTutAction> ActionToCheck)
 
 
 	return false;
+}
+
+void UTutActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
 }
