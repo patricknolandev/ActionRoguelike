@@ -3,12 +3,13 @@
 
 #include "TutPlayerState.h"
 
+#include "Net/UnrealNetwork.h"
+
 ATutPlayerState::ATutPlayerState()
 {
 	Credits = 0;
 	CreditsMax = 1000000;
 }
-
 
 ATutPlayerState* ATutPlayerState::GetPlayerState(AActor* FromActor)
 {
@@ -37,7 +38,8 @@ void ATutPlayerState::AddCredits(int32 Delta)
 
 	Credits += Delta;
 
-	OnCreditsChanged.Broadcast(this, Credits, Delta);
+	MulticastCreditsChanged(this, Credits, Delta);
+	
 }
 
 bool ATutPlayerState::RemoveCredits(int32 Delta)
@@ -54,7 +56,7 @@ bool ATutPlayerState::RemoveCredits(int32 Delta)
 
 	Credits -= Delta;
 
-	OnCreditsChanged.Broadcast(this, Credits, -Delta);
+	MulticastCreditsChanged(this, Credits, -Delta);
 
 	return true;
 }
@@ -67,4 +69,17 @@ int32 ATutPlayerState::GetCredits() const
 bool ATutPlayerState::IsAtFullCredits() const
 {
 	return Credits >= CreditsMax || FMath::IsNearlyEqual(Credits, CreditsMax, KINDA_SMALL_NUMBER);
+}
+
+void ATutPlayerState::MulticastCreditsChanged_Implementation(AActor* InstigatorActor, int32 NewCredits, int32 Delta)
+{
+	OnCreditsChanged.Broadcast(InstigatorActor, NewCredits, Delta);
+}
+
+void ATutPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATutPlayerState, Credits);
+	DOREPLIFETIME(ATutPlayerState, CreditsMax);
 }

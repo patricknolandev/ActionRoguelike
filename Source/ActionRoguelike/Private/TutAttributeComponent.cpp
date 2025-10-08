@@ -88,8 +88,6 @@ void UTutAttributeComponent::AddRage(AActor* InstigatorActor, float Delta)
 		MulticastRageChanged(InstigatorActor, Rage, ActualDelta);
 	}
 	
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Rage: %f"), Rage));
-	
 }
 
 bool UTutAttributeComponent::RemoveRage(AActor* InstigatorActor, float Delta)
@@ -105,7 +103,6 @@ bool UTutAttributeComponent::RemoveRage(AActor* InstigatorActor, float Delta)
 	}
 
 	// Rage cost delta is positive number here
-	
 	Rage -= Delta;
 
 	if (Delta != 0.0f)
@@ -190,5 +187,7 @@ void UTutAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(UTutAttributeComponent, Health);
 	DOREPLIFETIME(UTutAttributeComponent, HealthMax);
+	DOREPLIFETIME(UTutAttributeComponent, Rage);
+	DOREPLIFETIME(UTutAttributeComponent, RageMax);
 	//DOREPLIFETIME_CONDITION(UTutAttributeComponent, HealthMax, COND_InitialOnly); // used to optimize for bandwith / cpu
 }

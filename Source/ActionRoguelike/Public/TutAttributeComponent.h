@@ -32,10 +32,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Attributes")
 	float HealthMax;
 
-	UPROPERTY(BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category="Attributes")
 	float Rage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category="Attributes")
 	float RageMax;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
@@ -49,7 +49,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable) // TODO fix to be unreliable as input is currently disabled when health is 0 on character
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewValue, float Delta);
 
-	UFUNCTION(NetMulticast, Reliable) // TODO fix to be unreliable as input is currently disabled when health is 0 on character
+	UFUNCTION(NetMulticast, Unreliable) // TODO fix to be unreliable as input is currently disabled when health is 0 on character
 	void MulticastRageChanged(AActor* InstigatorActor, float NewValue, float Delta);
 
 public:

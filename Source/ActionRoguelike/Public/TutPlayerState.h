@@ -22,11 +22,14 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category="Attributes")
 	int32 Credits;
 
-	UPROPERTY(BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category="Attributes")
 	int32 CreditsMax;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastCreditsChanged(AActor* InstigatorActor, int32 NewCredits, int32 Delta);
 
 public:
 
@@ -39,7 +42,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Credits")
 	bool RemoveCredits(int32 Delta);
 	
-
 	UFUNCTION(BlueprintCallable, Category = "Credits")
 	int32 GetCredits() const;
 
