@@ -29,7 +29,7 @@ void ATutPickupAbility::Interact_Implementation(APawn* InstigatorPawn)
 
 			// Give new Ability to player
 			ActionComp->AddAction(InstigatorPawn, Ability);
-			HideAndCooldownPickup();
+			Super::Interact_Implementation(InstigatorPawn);
 		}
 	}
 }

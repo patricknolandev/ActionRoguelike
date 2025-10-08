@@ -20,7 +20,7 @@ public:
 	void Interact_Implementation(APawn* InstigatorPawn);
 
 protected:
-
+	
 	UPROPERTY(EditAnywhere)
 	USphereComponent* SphereComp;
 
@@ -31,8 +31,13 @@ protected:
 	float CostCredits;
 
 	FTimerHandle TimerHandle_RespawnTimer;
+
+	UPROPERTY(ReplicatedUsing="OnRep_SetPickupState", BlueprintReadOnly)
+	bool bIsActive;
 	
 	void ShowPickup();
 	void HideAndCooldownPickup();
-	void SetPickupState(bool bNewIsActive);
+
+	UFUNCTION()
+	void OnRep_SetPickupState();
 };

@@ -4,6 +4,7 @@
 #include "TutItemPickup.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ATutItemPickup::ATutItemPickup()
@@ -16,27 +17,35 @@ ATutItemPickup::ATutItemPickup()
 	CostCredits = 0.0f;
 
 	bReplicates = true;
+	bIsActive = true;
 }
 
 void ATutItemPickup::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// logic in derived classes
+
+	// Hide pickup
+	bIsActive = false;
+	OnRep_SetPickupState();
+	// Respawn after a delay
+	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ATutItemPickup::ShowPickup, RespawnTime);
+}
+
+void ATutItemPickup::OnRep_SetPickupState()
+{
+	SetActorEnableCollision(bIsActive);
+	RootComponent->SetVisibility(bIsActive, true);
 }
 
 void ATutItemPickup::ShowPickup()
 {
-	SetPickupState(true);
+	bIsActive = true;
+	OnRep_SetPickupState();
 }
 
-void ATutItemPickup::HideAndCooldownPickup()
+void ATutItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	SetPickupState(false);
-	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ATutItemPickup::ShowPickup, RespawnTime);
-}
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-void ATutItemPickup::SetPickupState(bool bNewIsActive)
-{
-	SetActorEnableCollision(bNewIsActive);
-	RootComponent->SetVisibility(bNewIsActive, true);
+	DOREPLIFETIME(ATutItemPickup, bIsActive);
 }
-

@@ -22,6 +22,6 @@ void ATutPickupCoin::Interact_Implementation(APawn* InstigatorPawn)
 	if (ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn))
 	{
 		PS->AddCredits(CreditAmount);
-		HideAndCooldownPickup();
+		Super::Interact_Implementation(InstigatorPawn);
 	}
 }

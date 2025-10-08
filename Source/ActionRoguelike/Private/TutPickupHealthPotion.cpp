@@ -29,10 +29,9 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		{
 			if (ATutPlayerState* PS = ATutPlayerState::GetPlayerState(InstigatorPawn))
 			{
-				// Only activate on successful heal and credit deduction
 				if (PS->RemoveCredits(CostCredits) && AttributeComp->ApplyHealthChange(this, HealAmount))
 				{
-					HideAndCooldownPickup();
+					Super::Interact_Implementation(InstigatorPawn);
 				}
 			}
 		}
