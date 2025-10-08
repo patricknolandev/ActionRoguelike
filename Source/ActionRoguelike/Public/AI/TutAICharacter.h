@@ -57,5 +57,8 @@ protected:
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastSpawnSpottedWidget();
 	
 };

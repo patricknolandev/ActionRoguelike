@@ -46,15 +46,21 @@ void ATutAICharacter::OnPawnSeen(APawn* Pawn)
 	if (GetTargetActor() != Pawn)
 	{
 		SetTargetActor(Pawn);
-		if (PlayerSpottedWidget == nullptr)
+		MulticastSpawnSpottedWidget();
+	}
+}
+
+void ATutAICharacter::MulticastSpawnSpottedWidget_Implementation()
+{
+	// Spawn spotted widget for server and clients
+	if (PlayerSpottedWidget == nullptr)
+	{
+		PlayerSpottedWidget = CreateWidget<UTutWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
+		if (PlayerSpottedWidget)
 		{
-			PlayerSpottedWidget = CreateWidget<UTutWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
-			if (PlayerSpottedWidget)
-			{
-				PlayerSpottedWidget->AttachedActor = this;
-				// Place on top of other widget layers as prio
-				PlayerSpottedWidget->AddToViewport(10);
-			}
+			PlayerSpottedWidget->AttachedActor = this;
+			// Place on top of other widget layers as prio
+			PlayerSpottedWidget->AddToViewport(10);
 		}
 	}
 }
