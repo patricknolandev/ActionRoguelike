@@ -4,6 +4,8 @@
 #include "Actions/TutActionComponent.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "Actions/TutAction.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
 
 UTutActionComponent::UTutActionComponent()
 {
@@ -16,9 +18,13 @@ void UTutActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TSubclassOf<UTutAction> ActionClass : DefaultActions)
+	// Server Only
+	if (GetOwner()->HasAuthority())
 	{
-		AddAction(GetOwner(), ActionClass);
+		for (TSubclassOf<UTutAction> ActionClass : DefaultActions)
+		{
+			AddAction(GetOwner(), ActionClass);
+		}
 	}
 }
 
@@ -38,7 +44,7 @@ void UTutActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 			*GetNameSafe(GetOwner()),
 			*Action->ActionName.ToString(),
 			Action->IsRunning() ? TEXT("true") : TEXT("false"),
-			*GetNameSafe(GetOuter()));
+			*GetNameSafe(Action->GetOuter()));
 		
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
@@ -51,9 +57,11 @@ void UTutActionComponent::AddAction(AActor* Instigator, TSubclassOf<UTutAction> 
 		return;
 	}
 
-	UTutAction* NewAction = NewObject<UTutAction>(this, ActionClass);
+	UTutAction* NewAction = NewObject<UTutAction>(GetOwner(), ActionClass);
 	if (ensure(NewAction))
 	{
+		NewAction->Initialize(this);
+		
 		Actions.Add(NewAction);
 
 		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator)))
@@ -137,4 +145,29 @@ bool UTutActionComponent::HasActions(TSubclassOf<UTutAction> ActionToCheck)
 void UTutActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
 	StartActionByName(Instigator, ActionName);
+}
+
+bool UTutActionComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (UTutAction* Action : Actions)
+	{
+		if (Action)
+		{
+			// Checking if each variable has changed, if so, write it into WroteSomething to be replicated
+			// Channel - a "thread" used to replicate the object from server to client
+			WroteSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
+		}
+	}
+
+	// Tells Unreal: "there's a change in this component, please replicate my data"
+	return WroteSomething;
+}
+
+void UTutActionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UTutActionComponent, Actions);
 }

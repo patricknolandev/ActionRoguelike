@@ -4,6 +4,12 @@
 #include "Actions/TutAction.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "Actions/TutActionComponent.h"
+#include "Net/UnrealNetwork.h"
+
+void UTutAction::Initialize(UTutActionComponent* NewActionComp)
+{
+	ActionComp = NewActionComp;
+}
 
 void UTutAction::StartAction_Implementation(AActor* Instigator)
 {
@@ -21,7 +27,7 @@ void UTutAction::StopAction_Implementation(AActor* Instigator)
 	//UE_LOG(LogTemp, Warning, TEXT("Stopped %s"), *GetNameSafe(this));
 	LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 	
-	ensureAlways(bIsRunning);
+	//ensureAlways(bIsRunning);
 	
 	UTutActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
@@ -32,17 +38,16 @@ void UTutAction::StopAction_Implementation(AActor* Instigator)
 UWorld* UTutAction::GetWorld() const
 {
 	// Outer is set when creating action via NewObject<T>
-	UActorComponent* Comp = Cast<UActorComponent>(GetOuter());
-	if (Comp)
+	if (ActionComp)
 	{
-		return Comp->GetWorld();
+		return ActionComp->GetWorld();
 	}
 	return nullptr;
 }
 
 UTutActionComponent* UTutAction::GetOwningComponent() const
 {
-	return Cast<UTutActionComponent>(GetOuter());
+	return ActionComp;
 }
 
 bool UTutAction::CanStart_Implementation(AActor* Instigator)
@@ -62,7 +67,27 @@ bool UTutAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
+void UTutAction::OnRep_IsRunning()
+{
+	if (bIsRunning)
+	{
+		StartAction(nullptr);
+	}
+	else
+	{
+		StopAction(nullptr);
+	}
+}
+
 bool UTutAction::IsRunning() const
 {
 	return bIsRunning;
+}
+
+void UTutAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UTutAction, bIsRunning);
+	DOREPLIFETIME(UTutAction, ActionComp);
 }

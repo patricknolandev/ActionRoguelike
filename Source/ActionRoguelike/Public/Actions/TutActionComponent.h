@@ -45,12 +45,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<UTutAction>> DefaultActions;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<UTutAction*> Actions;
 	
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 };

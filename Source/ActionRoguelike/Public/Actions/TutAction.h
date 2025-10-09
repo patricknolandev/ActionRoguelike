@@ -19,6 +19,9 @@ class ACTIONROGUELIKE_API UTutAction : public UObject
 
 protected:
 
+	UPROPERTY(Replicated)
+	UTutActionComponent* ActionComp;
+	
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	UTutActionComponent* GetOwningComponent() const;
 
@@ -30,10 +33,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer BlockedTags;
 
+	UPROPERTY(ReplicatedUsing = "OnRep_IsRunning")
 	bool bIsRunning;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 	
 public:
 
+	void Initialize(UTutActionComponent* NewActionComp);
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	bool bAutoStart;
 	
@@ -54,4 +63,10 @@ public:
 	FName ActionName;
 
 	UWorld* GetWorld() const override; //to give access in blueprint
+
+	// support replication for uobjects
+	bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 };
