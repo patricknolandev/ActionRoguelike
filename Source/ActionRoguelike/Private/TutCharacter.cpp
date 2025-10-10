@@ -166,6 +166,9 @@ void ATutCharacter::OnHealthChanged(AActor* InstigatorActor, UTutAttributeCompon
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		DisableInput(PC);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// Remove corpse after time
+		SetLifeSpan(5.0f);
 	}
 }
 

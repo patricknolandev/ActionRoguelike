@@ -47,7 +47,7 @@ void ATutMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Ove
 	 	{
 	 		Explode();
 
-	 		if (ActionComp && bApplyEffect && EffectActionClass)
+	 		if (ActionComp && bApplyEffect && EffectActionClass && HasAuthority())
 	 		{
 	 			ActionComp->AddAction(GetInstigator(), EffectActionClass);
 	 		}

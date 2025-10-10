@@ -39,12 +39,7 @@ void UTutActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	for (UTutAction* Action : Actions)
 	{
 		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
-		
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action %s : IsRunning: %s : Outer: %s"),
-			*GetNameSafe(GetOwner()),
-			*Action->ActionName.ToString(),
-			Action->IsRunning() ? TEXT("true") : TEXT("false"),
-			*GetNameSafe(Action->GetOuter()));
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action));
 		
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
@@ -57,6 +52,13 @@ void UTutActionComponent::AddAction(AActor* Instigator, TSubclassOf<UTutAction> 
 		return;
 	}
 
+	// Don't allow clients to add actions to array
+	if (!GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Client attempting to AddAction. [Class: %s]"), *GetNameSafe(ActionClass));
+		return;
+	}
+	
 	UTutAction* NewAction = NewObject<UTutAction>(GetOwner(), ActionClass);
 	if (ensure(NewAction))
 	{
@@ -116,6 +118,11 @@ bool UTutActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		{
 			if (Action->IsRunning())
 			{
+				if (!GetOwner()->HasAuthority())
+				{
+					ServerStopAction(Instigator, ActionName);
+				}
+				
 				Action->StopAction(Instigator);
 				return true;
 			}
@@ -142,9 +149,16 @@ bool UTutActionComponent::HasActions(TSubclassOf<UTutAction> ActionToCheck)
 	return false;
 }
 
+
+
 void UTutActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
 	StartActionByName(Instigator, ActionName);
+}
+
+void UTutActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
 }
 
 bool UTutActionComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,

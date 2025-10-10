@@ -9,6 +9,20 @@
 
 class UTutActionComponent;
 class UWorld;
+
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	bool bIsRunning;
+
+	UPROPERTY()
+	AActor* Instigator;
+};
 /**
  * 
  */
@@ -33,11 +47,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer BlockedTags;
 
-	UPROPERTY(ReplicatedUsing = "OnRep_IsRunning")
-	bool bIsRunning;
+	// Guarantees instigator and running status arrives at the same time
+	UPROPERTY(ReplicatedUsing = "OnRep_RepData")
+	FActionRepData RepData;
 
+	// Is only triggered on clients when they receive a packet with bIsRunning is set to a different value on server than the client has
 	UFUNCTION()
-	void OnRep_IsRunning();
+	void OnRep_RepData();
 	
 public:
 

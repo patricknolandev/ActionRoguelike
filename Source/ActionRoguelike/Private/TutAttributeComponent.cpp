@@ -38,28 +38,34 @@ bool UTutAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float De
 		float DamageMultipler = CVarDamageMultiplier.GetValueOnGameThread();
 		Delta *= DamageMultipler;
 	}
-	
+
+	// Client's are not allowed to apply health change, but must register taking damage in order to complete projectile logic
 	float OldHealth = Health;
+	float NewHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
-	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
-
-	float ActualDelta = Health - OldHealth;
-
-	if (ActualDelta != 0.0f)
+	float ActualDelta = NewHealth - OldHealth;
+	
+	// Only server can apply health change and results
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
-	}
-
-	// Died
-	if (ActualDelta < 0.0f && Health == 0.0f)
-	{
-		ATutGameModeBase* GM = GetWorld()->GetAuthGameMode<ATutGameModeBase>();
-		if (GM)
+		Health = NewHealth;
+		if (ActualDelta != 0.0f)
 		{
-			GM->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+		}
+
+		// Died
+		if (ActualDelta < 0.0f && Health == 0.0f)
+		{
+			ATutGameModeBase* GM = GetWorld()->GetAuthGameMode<ATutGameModeBase>();
+			if (GM)
+			{
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
-	
+
+	// Client needs to know return in-case of being dead taking damage, full health getting healed
 	return ActualDelta != 0;
 }
 

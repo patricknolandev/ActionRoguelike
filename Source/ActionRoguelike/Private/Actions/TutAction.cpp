@@ -13,26 +13,28 @@ void UTutAction::Initialize(UTutActionComponent* NewActionComp)
 
 void UTutAction::StartAction_Implementation(AActor* Instigator)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Running %s"), *GetNameSafe(this));
-	LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
+	UE_LOG(LogTemp, Warning, TEXT("Running %s"), *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
 	
 	UTutActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void UTutAction::StopAction_Implementation(AActor* Instigator)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Stopped %s"), *GetNameSafe(this));
-	LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
+	UE_LOG(LogTemp, Warning, TEXT("Stopped %s"), *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 	
 	//ensureAlways(bIsRunning);
 	
 	UTutActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
-	bIsRunning = false;
+	RepData.bIsRunning = false;
+	RepData.Instigator = Instigator;
 }
 
 UWorld* UTutAction::GetWorld() const
@@ -67,27 +69,27 @@ bool UTutAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
-void UTutAction::OnRep_IsRunning()
+void UTutAction::OnRep_RepData()
 {
-	if (bIsRunning)
+	if (RepData.bIsRunning)
 	{
-		StartAction(nullptr);
+		StartAction(RepData.Instigator);
 	}
 	else
 	{
-		StopAction(nullptr);
+		StopAction(RepData.Instigator);
 	}
 }
 
 bool UTutAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 void UTutAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UTutAction, bIsRunning);
+	DOREPLIFETIME(UTutAction, RepData);
 	DOREPLIFETIME(UTutAction, ActionComp);
 }
