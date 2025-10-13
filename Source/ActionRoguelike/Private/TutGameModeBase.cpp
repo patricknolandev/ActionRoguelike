@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "TutAttributeComponent.h"
 #include "TutCharacter.h"
+#include "TutGameplayInterface.h"
 #include "TutItemPickup.h"
 #include "TutPlayerState.h"
 #include "TutSaveGame.h"
@@ -248,6 +249,27 @@ void ATutGameModeBase::WriteSaveGame()
 			break; // single player only at this point
 		}
 	}
+
+	// Clear the saved actors so we don't append duplicates
+	CurrentSaveGame->SavedActors.Empty();
+	
+	// Iterate the entire world of actors
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		// Only interested in our "gameplay actors"
+		if (!Actor->Implements<UTutGameplayInterface>())
+		{
+			continue;
+		}
+
+		// Write the save
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetTransform();
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
 	
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
@@ -264,6 +286,27 @@ void ATutGameModeBase::LoadSaveGame()
 		}
 
 		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame data."));
+
+		// Iterate the entire world of actors
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+			// Only interested in our "gameplay actors"
+			if (!Actor->Implements<UTutGameplayInterface>())
+			{
+				continue;
+			}
+
+			// Find the matching save data to the current actor and set their transform
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+					break;
+				}
+			}
+		}
 	}
 	else
 	{
