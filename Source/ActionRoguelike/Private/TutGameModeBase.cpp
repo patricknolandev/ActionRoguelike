@@ -9,9 +9,12 @@
 #include "TutCharacter.h"
 #include "TutItemPickup.h"
 #include "TutPlayerState.h"
+#include "TutSaveGame.h"
 #include "AI/TutAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("tut.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarDebugDrawBotSpawn(TEXT("tut.DebugDrawBotSpawn"), false, TEXT("Enable debug circles for bot spawns."), ECVF_Cheat);
@@ -24,6 +27,15 @@ ATutGameModeBase::ATutGameModeBase()
 	SpawnPickupMax = 10;
 	RequiredPickupDistance = 300.0f;
 	PlayerStateClass = ATutPlayerState::StaticClass();
+
+	SlotName = "SaveGame01";
+}
+
+void ATutGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
 }
 
 void ATutGameModeBase::StartPlay()
@@ -35,6 +47,17 @@ void ATutGameModeBase::StartPlay()
 	{
 		FEnvQueryRequest Request(SpawnPickupQuery, this);
 		Request.Execute(EEnvQueryRunMode::RandomBest5Pct, this, &ATutGameModeBase::OnPickupSpawnQueryCompleted);
+	}
+}
+
+void ATutGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	ATutPlayerState* PS = NewPlayer->GetPlayerState<ATutPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
 	}
 }
 
@@ -210,5 +233,42 @@ void ATutGameModeBase::OnPickupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 		
 		UsedLocations.Add(PickedLocation);
 		SpawnCounter++;
+	}
+}
+
+void ATutGameModeBase::WriteSaveGame()
+{
+	// Iterate all player states, we don't have proper ID to match yet (requires Steam or EQS)
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		ATutPlayerState* PS = Cast<ATutPlayerState>(GameState->PlayerArray[i]);
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break; // single player only at this point
+		}
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
+}
+
+void ATutGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<UTutSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame data."));
+			return;
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame data."));
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UTutSaveGame>(UGameplayStatics::CreateSaveGameObject(UTutSaveGame::StaticClass()));
+
+		UE_LOG(LogTemp, Log, TEXT("Created new SaveGame data."));
 	}
 }

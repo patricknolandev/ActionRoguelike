@@ -3,6 +3,7 @@
 
 #include "TutPlayerState.h"
 
+#include "TutSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
 ATutPlayerState::ATutPlayerState()
@@ -71,6 +72,22 @@ bool ATutPlayerState::IsAtFullCredits() const
 	return Credits >= CreditsMax || FMath::IsNearlyEqual(Credits, CreditsMax, KINDA_SMALL_NUMBER);
 }
 
+void ATutPlayerState::SavePlayerState_Implementation(UTutSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		SaveObject->Credits = Credits;
+	}
+}
+
+void ATutPlayerState::LoadPlayerState_Implementation(UTutSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		Credits = SaveObject->Credits;
+	}
+}
+
 void ATutPlayerState::MulticastCreditsChanged_Implementation(AActor* InstigatorActor, int32 NewCredits, int32 Delta)
 {
 	OnCreditsChanged.Broadcast(InstigatorActor, NewCredits, Delta);
@@ -83,3 +100,4 @@ void ATutPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ATutPlayerState, Credits);
 	DOREPLIFETIME(ATutPlayerState, CreditsMax);
 }
+

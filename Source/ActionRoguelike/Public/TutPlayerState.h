@@ -6,7 +6,9 @@
 #include "GameFramework/PlayerState.h"
 #include "TutPlayerState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AActor*, InstigatorActor, int32, NewCredits, int32, Delta);
+class UTutSaveGame;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AActor*, InstigatorActor, int32, NewCredits, int32,
+                                               Delta);
 
 /**
  * 
@@ -49,4 +51,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnCreditsChanged OnCreditsChanged; // use this in BP to update HUD
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SavePlayerState(UTutSaveGame* SaveObject);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LoadPlayerState(UTutSaveGame* SaveObject);
 };

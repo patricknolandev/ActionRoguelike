@@ -15,6 +15,7 @@ class ATutItemPickup;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class UTutSaveGame;
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutGameModeBase : public AGameModeBase
@@ -23,6 +24,11 @@ class ACTIONROGUELIKE_API ATutGameModeBase : public AGameModeBase
 
 protected:
 
+	FString SlotName;
+	
+	UPROPERTY()
+	UTutSaveGame* CurrentSaveGame;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
 
@@ -68,8 +74,17 @@ public:
 	
 	ATutGameModeBase();
 
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	
 	virtual void StartPlay() override;
+
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
 	UFUNCTION(Exec)
 	void KillAll();
+
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
 };
