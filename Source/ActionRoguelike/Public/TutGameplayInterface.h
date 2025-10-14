@@ -22,6 +22,10 @@ class ACTIONROGUELIKE_API ITutGameplayInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
+	// Called after the Actor state was restored from a SaveGame file.
+	UFUNCTION(BlueprintNativeEvent)
+	void OnActorLoaded();
 	
 	// We want a way to interact with objects in the world as the player, such as a treasure chest, or health potion,
 	// and call specific logic on each object (give treasure, give health). We also want to know who triggered it, so

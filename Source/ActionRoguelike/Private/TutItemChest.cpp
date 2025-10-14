@@ -29,6 +29,13 @@ void ATutItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	bLidOpened = !bLidOpened;
 	// Open lid visually on server manually as RPC's are on clients only in C++, blueprints is client + server
 	OnRep_LidOpened();
+
+	
+}
+
+void ATutItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
 }
 
 void ATutItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

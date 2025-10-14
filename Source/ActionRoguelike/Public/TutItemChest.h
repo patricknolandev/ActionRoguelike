@@ -14,18 +14,21 @@ class ACTIONROGUELIKE_API ATutItemChest : public AActor, public ITutGameplayInte
 {
 	GENERATED_BODY()
 
+public: 
+
+	// Sets default values for this actor's properties
+	ATutItemChest();
+	
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
 	
 	void Interact_Implementation(APawn* InstigatorPawn);
 	
-public:	
-	// Sets default values for this actor's properties
-	ATutItemChest();
+	void OnActorLoaded_Implementation();
 
 protected:
 
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly) // RepNotify
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly, SaveGame) // RepNotify
 	bool bLidOpened;
 
 	UFUNCTION()

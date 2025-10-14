@@ -16,6 +16,7 @@
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("tut.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarDebugDrawBotSpawn(TEXT("tut.DebugDrawBotSpawn"), false, TEXT("Enable debug circles for bot spawns."), ECVF_Cheat);
@@ -268,6 +269,15 @@ void ATutGameModeBase::WriteSaveGame()
 		ActorData.ActorName = Actor->GetName();
 		ActorData.Transform = Actor->GetTransform();
 
+		// Pass the array to fill with data from actor
+		FMemoryWriter MemWriter(ActorData.ByteData);
+		
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		// Find only variables with UPROPERTY(SaveGame)
+		Ar.ArIsSaveGame = true;
+		// Converts Actor's SaveGame UPROPERTIES into binary array
+		Actor->Serialize(Ar);
+		
 		CurrentSaveGame->SavedActors.Add(ActorData);
 	}
 	
@@ -303,6 +313,17 @@ void ATutGameModeBase::LoadSaveGame()
 				if (ActorData.ActorName == Actor->GetName())
 				{
 					Actor->SetActorTransform(ActorData.Transform);
+
+					// Pass the array to have byte data to be read for conversion
+					FMemoryReader MemReader(ActorData.ByteData);
+					
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+					// Converts binary array back into actors and variables
+					Actor->Serialize(Ar);
+
+					ITutGameplayInterface::Execute_OnActorLoaded(Actor);
+					
 					break;
 				}
 			}
