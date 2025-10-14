@@ -24,18 +24,21 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing="OnRep_Credits", Category="Credits")
 	int32 Credits;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category="Credits")
 	int32 CreditsMax;
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastCreditsChanged(AActor* InstigatorActor, int32 NewCredits, int32 Delta);
+	UFUNCTION()
+	void OnRep_Credits(int32 OldCredits);
+	
+	//UFUNCTION(NetMulticast, Unreliable)
+	//void MulticastCreditsChanged(AActor* InstigatorActor, int32 NewCredits, int32 Delta);
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	UFUNCTION(BlueprintCallable, Category = "Credits")
 	static ATutPlayerState* GetPlayerState(AActor* FromActor);
 
 	UFUNCTION(BlueprintCallable, Category = "Credits")

@@ -31,13 +31,13 @@ protected:
 	float CostCredits;
 
 	FTimerHandle TimerHandle_RespawnTimer;
-
-	UPROPERTY(ReplicatedUsing="OnRep_SetPickupState", BlueprintReadOnly)
-	bool bIsActive;
 	
 	void ShowPickup();
 	void HideAndCooldownPickup();
 
+	UPROPERTY(ReplicatedUsing="OnRep_SetPickupState", BlueprintReadOnly)
+	bool bIsActive;
+	
 	UFUNCTION()
 	void OnRep_SetPickupState();
 };

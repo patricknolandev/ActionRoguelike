@@ -10,3 +10,15 @@ void ATutPlayerController::SetPawn(APawn* InPawn)
 
 	OnPawnChanged.Broadcast(InPawn);
 }
+
+void ATutPlayerController::BeginPlayingState()
+{
+	BlueprintBeginPlayingState();
+}
+
+void ATutPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	OnPlayerStateReceived.Broadcast(PlayerState);
+}

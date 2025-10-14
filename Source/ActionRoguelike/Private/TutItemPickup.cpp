@@ -31,16 +31,16 @@ void ATutItemPickup::Interact_Implementation(APawn* InstigatorPawn)
 	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ATutItemPickup::ShowPickup, RespawnTime);
 }
 
-void ATutItemPickup::OnRep_SetPickupState()
-{
-	SetActorEnableCollision(bIsActive);
-	RootComponent->SetVisibility(bIsActive, true);
-}
-
 void ATutItemPickup::ShowPickup()
 {
 	bIsActive = true;
 	OnRep_SetPickupState();
+}
+
+void ATutItemPickup::OnRep_SetPickupState()
+{
+	SetActorEnableCollision(bIsActive);
+	RootComponent->SetVisibility(bIsActive, true);
 }
 
 void ATutItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

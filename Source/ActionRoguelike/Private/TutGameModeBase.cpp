@@ -54,13 +54,14 @@ void ATutGameModeBase::StartPlay()
 
 void ATutGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
+	// Called before Super:: so we set variables before 'beginplayingstate' is called in PlayerController (which is where we instantiate UI)
 	ATutPlayerState* PS = NewPlayer->GetPlayerState<ATutPlayerState>();
 	if (PS)
 	{
 		PS->LoadPlayerState(CurrentSaveGame);
 	}
+
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void ATutGameModeBase::KillAll() // @fixme: do over multiple frames to avoid perf spike
