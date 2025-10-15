@@ -16,9 +16,9 @@ void ATutPlayerController::BeginPlayingState()
 	BlueprintBeginPlayingState();
 }
 
-void ATutPlayerController::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
+//void ATutPlayerController::OnRep_PlayerState()
+//{
+//	Super::OnRep_PlayerState();
 
-	OnPlayerStateReceived.Broadcast(PlayerState);
-}
+//	OnPlayerStateReceived.Broadcast(PlayerState);
+//}
