@@ -33,6 +33,9 @@ class ACTIONROGUELIKE_API UTutAction : public UObject
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	UTexture2D* Icon;
+	
 	UPROPERTY(Replicated)
 	UTutActionComponent* ActionComp;
 	
@@ -50,6 +53,8 @@ protected:
 	// Guarantees instigator and running status arrives at the same time
 	UPROPERTY(ReplicatedUsing = "OnRep_RepData")
 	FActionRepData RepData;
+
+	float TimeStarted;
 
 	// Is only triggered on clients when they receive a packet with bIsRunning is set to a different value on server than the client has
 	UFUNCTION()

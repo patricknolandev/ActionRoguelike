@@ -20,13 +20,19 @@ class ACTIONROGUELIKE_API ATutPlayerController : public APlayerController
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UUserWidget> PauseMenuClass;
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;
+
+	UFUNCTION(BlueprintCallable)
+	void TogglePauseMenu();
+
+	void SetupInputComponent() override;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnChanged OnPawnChanged;
-
-	/* Listen for incoming player state (for clients this may be nullptr when initially joining a game,
-		afterwards player state will not change again as PlayerControllers maintain the same player state throughout the level) */
-//	UPROPERTY(BlueprintAssignable)
-//	FOnPlayerStateChanged OnPlayerStateReceived;
 	
 	virtual void SetPawn(APawn* InPawn) override;
 
@@ -37,5 +43,10 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BlueprintBeginPlayingState();
 
-//	void OnRep_PlayerState() override;
+	/* Listen for incoming player state (for clients this may be nullptr when initially joining a game,
+		afterwards player state will not change again as PlayerControllers maintain the same player state throughout the level) */
+	//	UPROPERTY(BlueprintAssignable)
+	//	FOnPlayerStateChanged OnPlayerStateReceived;
+	
+	//	void OnRep_PlayerState() override;
 };

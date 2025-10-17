@@ -21,6 +21,10 @@ void UTutAction::StartAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+
+	TimeStarted = GetWorld()->GetTimeSeconds();
+
+	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }
 
 void UTutAction::StopAction_Implementation(AActor* Instigator)
@@ -35,6 +39,8 @@ void UTutAction::StopAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = false;
 	RepData.Instigator = Instigator;
+
+	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
 }
 
 UWorld* UTutAction::GetWorld() const
@@ -85,6 +91,7 @@ bool UTutAction::IsRunning() const
 {
 	return RepData.bIsRunning;
 }
+
 
 void UTutAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {

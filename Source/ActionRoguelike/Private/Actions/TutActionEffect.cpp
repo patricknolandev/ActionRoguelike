@@ -51,6 +51,11 @@ void UTutActionEffect::StopAction_Implementation(AActor* Instigator)
 	}
 }
 
+float UTutActionEffect::GetTimeRemaining() const
+{
+	float EndTime = TimeStarted + Duration;
+	return EndTime - GetWorld()->GetTimeSeconds();
+}
 
 void UTutActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
 {
