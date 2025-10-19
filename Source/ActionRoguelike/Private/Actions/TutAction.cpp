@@ -22,7 +22,11 @@ void UTutAction::StartAction_Implementation(AActor* Instigator)
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
 
-	TimeStarted = GetWorld()->GetTimeSeconds();
+	// Used to syncronize the server time to clients in order to set duration of effects for join-in-progress
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	{
+		TimeStarted = GetWorld()->GetTimeSeconds();
+	}
 
 	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }
@@ -99,4 +103,5 @@ void UTutAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UTutAction, RepData);
 	DOREPLIFETIME(UTutAction, ActionComp);
+	DOREPLIFETIME(UTutAction, TimeStarted);
 }

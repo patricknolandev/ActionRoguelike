@@ -3,6 +3,7 @@
 
 #include "Actions/TutActionEffect.h"
 #include "Actions/TutActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 
 UTutActionEffect::UTutActionEffect()
@@ -49,13 +50,19 @@ void UTutActionEffect::StopAction_Implementation(AActor* Instigator)
 	{
 		Comp->RemoveAction(this);
 	}
-	// Test change
 }
 
 float UTutActionEffect::GetTimeRemaining() const
 {
-	float EndTime = TimeStarted + Duration;
-	return EndTime - GetWorld()->GetTimeSeconds();
+	// Use server time through game state to syncronize client and server effects
+	AGameStateBase* GS = GetWorld()->GetGameState<AGameStateBase>();
+	if (GS)
+	{
+		float EndTime = TimeStarted + Duration;
+		return EndTime - GS->GetServerWorldTimeSeconds();
+	}
+
+	return Duration;
 }
 
 void UTutActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)

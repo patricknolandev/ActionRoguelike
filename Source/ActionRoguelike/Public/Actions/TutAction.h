@@ -54,6 +54,7 @@ protected:
 	UPROPERTY(ReplicatedUsing = "OnRep_RepData")
 	FActionRepData RepData;
 
+	UPROPERTY(Replicated)
 	float TimeStarted;
 
 	// Is only triggered on clients when they receive a packet with bIsRunning is set to a different value on server than the client has
