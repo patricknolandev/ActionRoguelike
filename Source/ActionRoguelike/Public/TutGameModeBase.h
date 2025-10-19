@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
+#include "Engine/DataTable.h"
 #include "TutGameModeBase.generated.h"
 
 /**
@@ -16,6 +17,40 @@ class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
 class UTutSaveGame;
+class UDataTable;
+class UTutMonsterData;
+
+/* DataTable Row for spawning monsters in game mode */
+USTRUCT(BlueprintType)
+struct FMonsterInfoRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+
+	FMonsterInfoRow()
+	{
+		Weight = 1.0f;
+		SpawnCost = 5.0f;
+		KillCredits = 20;
+	}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UTutMonsterData* MonsterData;
+
+	/* Relative chance to pick this monster */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight;
+
+	/* Points required by gamemode to spawn this unit. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SpawnCost;
+
+	/* Amount of credits awarded to killer of this unit. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 KillCredits;
+	
+};
 
 UCLASS()
 class ACTIONROGUELIKE_API ATutGameModeBase : public AGameModeBase
@@ -28,9 +63,13 @@ protected:
 	
 	UPROPERTY()
 	UTutSaveGame* CurrentSaveGame;
-	
+
+	/* All available monsters */
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	TSubclassOf<AActor> MinionClass;
+	UDataTable* MonsterTable;
+	
+	/*UPROPERTY(EditDefaultsOnly, Category = "AI")
+	TSubclassOf<AActor> MinionClass;*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
 	TArray<TSubclassOf<ATutItemPickup>> PickupClasses;
