@@ -5,6 +5,8 @@
 #include "TutAttributeComponent.h"
 #include "TutPlayerState.h"
 
+#define LOCTEXT_NAMESPACE "InteractibleActors"
+
 ATutPickupHealthPotion::ATutPickupHealthPotion()
 {
 	// Don't want interact to pick up the mesh collision
@@ -37,3 +39,18 @@ void ATutPickupHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		}
 	}
 }
+
+FText ATutPickupHealthPotion::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	UTutAttributeComponent* AttributeComp = UTutAttributeComponent::GetAttributes(InstigatorPawn);
+
+	if (AttributeComp && AttributeComp->IsAtFullHealth())
+	{
+		return LOCTEXT("HealthPotion_FullHealthWarning", "Already at full health.");
+	}
+
+	return FText::Format(LOCTEXT("HealthPotion_InteractMessage", "Cost {0} Credits. Restores health to maximum."), CostCredits);
+	ITutGameplayInterface::GetInteractText_Implementation(InstigatorPawn);
+}
+
+#undef LOCTEXT_NAMESPACE

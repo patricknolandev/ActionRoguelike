@@ -31,6 +31,11 @@ void ATutItemPickup::Interact_Implementation(APawn* InstigatorPawn)
 	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ATutItemPickup::ShowPickup, RespawnTime);
 }
 
+FText ATutItemPickup::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void ATutItemPickup::ShowPickup()
 {
 	bIsActive = true;

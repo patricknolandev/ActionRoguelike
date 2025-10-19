@@ -26,6 +26,9 @@ public:
 	// Called after the Actor state was restored from a SaveGame file.
 	UFUNCTION(BlueprintNativeEvent)
 	void OnActorLoaded();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FText GetInteractText(APawn* InstigatorPawn);
 	
 	// We want a way to interact with objects in the world as the player, such as a treasure chest, or health potion,
 	// and call specific logic on each object (give treasure, give health). We also want to know who triggered it, so
