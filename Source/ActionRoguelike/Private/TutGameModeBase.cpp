@@ -12,6 +12,8 @@
 #include "TutMonsterData.h"
 #include "TutPlayerState.h"
 #include "TutSaveGame.h"
+#include "ActionRoguelike/ActionRoguelike.h"
+#include "Actions/TutActionComponent.h"
 #include "AI/TutAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
@@ -147,7 +149,21 @@ void ATutGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Resu
 			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
 			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
 			
-			GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			if (NewBot)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(SelectedRow->MonsterData)));
+
+				// Grant special actions, buffs to spawned enemy.
+				UTutActionComponent* ActionComp = Cast<UTutActionComponent>(NewBot->GetComponentByClass(UTutActionComponent::StaticClass()));
+				if (ActionComp)
+				{
+					for (TSubclassOf<UTutAction> ActionClass : SelectedRow->MonsterData->Actions)
+					{
+						ActionComp->AddAction(NewBot, ActionClass);
+					}
+				}
+			}
 		}
 		
 		if (bDebugDraw)
