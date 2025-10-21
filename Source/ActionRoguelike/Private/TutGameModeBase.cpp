@@ -14,7 +14,9 @@
 #include "TutSaveGame.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "Actions/TutActionComponent.h"
+#include "Actions/TutAction.h"
 #include "AI/TutAICharacter.h"
+#include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameStateBase.h"
@@ -126,7 +128,6 @@ void ATutGameModeBase::SpawnBotsTimerElapsed()
 void ATutGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
 {
 	FEnvQueryResult* QueryResult = Result.Get();
-	bool bDebugDraw = CVarDebugDrawBotSpawn.GetValueOnGameThread();
 	if (!QueryResult->IsSuccessful())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Spawn bot EQS Query failed!"));
@@ -148,27 +149,54 @@ void ATutGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Resu
 			// Get random enemy to spawn
 			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
 			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
-			
-			AActor* NewBot = GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			// Load the monster async then trigger the spawn delegate when loaded
+			UAssetManager* Manager = UAssetManager::GetIfValid();
+			if (Manager)
+			{
+				LogOnScreen(this, "Loading monster...", FColor::Green);
+				
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ATutGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
+			}
+		}
+	}
+}
+
+void ATutGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+{
+	bool bDebugDraw = CVarDebugDrawBotSpawn.GetValueOnGameThread();
+	LogOnScreen(this, "Monster loaded.", FColor::Green);
+	
+	UAssetManager* Manager = UAssetManager::GetIfValid();
+	if (Manager)
+	{
+		UTutMonsterData* MonsterData = Cast<UTutMonsterData>(Manager->GetPrimaryAssetObject(LoadedId));
+		if (MonsterData)
+		{
+			// Spawn the monster when loaded
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
 			if (NewBot)
 			{
-				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(SelectedRow->MonsterData)));
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData)));
 
 				// Grant special actions, buffs to spawned enemy.
 				UTutActionComponent* ActionComp = Cast<UTutActionComponent>(NewBot->GetComponentByClass(UTutActionComponent::StaticClass()));
 				if (ActionComp)
 				{
-					for (TSubclassOf<UTutAction> ActionClass : SelectedRow->MonsterData->Actions)
+					for (TSubclassOf<UTutAction> ActionClass : MonsterData->Actions)
 					{
-						ActionComp->AddAction(NewBot, ActionClass);
+						if (ActionClass)
+						{
+							ActionComp->AddAction(NewBot, ActionClass);
+						}
 					}
 				}
 			}
-		}
-		
-		if (bDebugDraw)
-		{
-			DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.0f);
+			if (bDebugDraw)
+			{
+				DrawDebugSphere(GetWorld(), SpawnLocation, 50.0f, 20, FColor::Blue, false, 60.0f);
+			}
 		}
 	}
 }

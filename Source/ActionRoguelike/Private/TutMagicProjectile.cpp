@@ -22,6 +22,8 @@ ATutMagicProjectile::ATutMagicProjectile()
 	// Speed of projectile
 	MovementComp->InitialSpeed = 2000.f;
 
+	InitialLifeSpan = 10.f;
+	
 	DamageAmount = 20.f;
 	
 }
