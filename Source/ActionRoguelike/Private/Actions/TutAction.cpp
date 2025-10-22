@@ -13,7 +13,7 @@ void UTutAction::Initialize(UTutActionComponent* NewActionComp)
 
 void UTutAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Running %s"), *GetNameSafe(this));
+	//UE_LOG(LogTemp, Warning, TEXT("Running %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
 	
 	UTutActionComponent* Comp = GetOwningComponent();
@@ -33,7 +33,7 @@ void UTutAction::StartAction_Implementation(AActor* Instigator)
 
 void UTutAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Stopped %s"), *GetNameSafe(this));
+	//UE_LOG(LogTemp, Warning, TEXT("Stopped %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 	
 	//ensureAlways(bIsRunning);

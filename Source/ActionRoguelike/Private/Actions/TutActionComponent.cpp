@@ -30,6 +30,21 @@ void UTutActionComponent::BeginPlay()
 	}
 }
 
+void UTutActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Stop all actions
+	TArray<UTutAction*> ActionsCopy = Actions;
+	for (UTutAction* Action : ActionsCopy)
+	{
+		if (Action && Action->IsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+	
+	Super::EndPlay(EndPlayReason);
+}
+
 void UTutActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -106,6 +121,9 @@ bool UTutActionComponent::StartActionByName(AActor* Instigator, FName ActionName
 			{
 				ServerStartAction(Instigator, ActionName);
 			}
+
+			// Bookmark for Unreal Insights
+			TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action))
 			
 			Action->StartAction(Instigator);
 			return true;
