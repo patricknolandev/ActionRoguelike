@@ -21,6 +21,7 @@ void UTutWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	}
 
 	FVector2D ScreenPosition;
+	bool bIsOnScreen = UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), AttachedActor->GetActorLocation() + WorldOffset, ScreenPosition);
 	
 	// will be true if a position onscreen is found, false if offscreen
 	if (UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), AttachedActor->GetActorLocation() + WorldOffset, ScreenPosition))
@@ -33,5 +34,10 @@ void UTutWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 		{
 			ParentSizeBox->SetRenderTranslation(ScreenPosition);
 		}
+	}
+
+	if (ParentSizeBox)
+	{
+		ParentSizeBox->SetVisibility(bIsOnScreen ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 	}
 }

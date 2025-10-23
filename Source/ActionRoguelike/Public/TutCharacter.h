@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "GameFramework/Character.h"
 #include "TutCharacter.generated.h"
 
+class UInputMappingContext;
 class UTutActionComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -39,13 +41,46 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 	FName TimeToHitParamName;
-	
-	void MoveForward(float Value);
-	void MoveRight(float Value);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* DefaultInputMapping;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Move;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_LookMouse;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_LookStick;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Jump;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Interact;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Sprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Mobility;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_PrimaryAttack;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* Input_Ability;
+
+	void Move(const FInputActionInstance& Instance);
+	/*void MoveForward(float Value);
+	void MoveRight(float Value);*/
 
 	void SprintStart();
 	void SprintStop();
-	
+	void LookMouse(const FInputActionValue& InputValue);
+	void LookStick(const FInputActionValue& InputValue);
+
 	void PrimaryAttack();
 	void AbilityBlackhole();
 	void MobilityDash();
@@ -69,5 +104,4 @@ public:
 
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100);
-
 };

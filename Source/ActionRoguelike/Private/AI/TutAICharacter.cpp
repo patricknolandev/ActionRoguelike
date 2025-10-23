@@ -23,7 +23,7 @@ ATutAICharacter::ATutAICharacter()
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // Make sure the AI always uses the controller so it will run behavior
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true); // necessary for projectiles to add impulses to ragdoll enemies
 	
 	TimeToHitParamName = "TimeToHit";
